@@ -1,0 +1,108 @@
+{.}
+programa ej3
+procesos
+  proceso juntarPap (ES cantP: numero)
+  comenzar
+    si (HayPapelEnLaEsquina)
+      mientras (HayPapelEnLaEsquina)
+        tomarPapel
+        cantP:= cantP+1
+  fin
+  proceso juntarF (ES cantF: numero)
+  comenzar
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        cantF:= cantF+1
+  fin
+  proceso recorrerPap(ES cantP: numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarPap(cantP)
+      mover
+    juntarPap (cantP)
+  fin
+  proceso recorrerFlor (ES cantF: numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarF(cantF)
+      mover
+    juntarF(cantF)
+  fin
+areas
+  areaA1a: AreaP (1,1,10,1)
+  areaA1b: AreaP (21,1,30,1)
+  areaA2a: AreaP (11,1,20,1)
+  areaA2b: AreaP (31,1,40,1)
+  areaB1a: AreaP (1,5,10,5)
+  areaB1b: AreaP (21,5,30,5)
+  areaB2a: AreaP (11,5,20,5)
+  areaB2b: AreaP (31,5,40,5)
+robots
+  robot ra1
+  variables
+    cantP:numero
+  comenzar
+    cantP:=0
+    recorrerPap (cantP)
+    EnviarMensaje(cantP, A2)
+    Pos (21,1) {segunda tanda}
+    RecibirMensaje(cantP,A2)
+    recorrerPap (cantP)
+    EnviarMensaje(cantP,A2)
+  fin
+  robot ra2
+  variables
+    cantP:numero
+  comenzar
+    RecibirMensaje (cantP, A1)
+    recorrerPap (cantP)
+    Pos(31,1)
+    RecibirMensaje(cantP,A1)
+    recorrerPap (cantP)
+    Informar('Cantidad total de papeles', cantP)
+  fin
+  robot rb1
+  variables
+    cantF:numero
+  comenzar
+    cantF:=0
+    recorrerFlor (cantF)
+    EnviarMensaje(cantF, B2)
+    Pos (21,5) {segunda tanda}
+    RecibirMensaje(cantF,B2)
+    recorrerPap (cantF)
+    EnviarMensaje(cantF,B2)
+  fin
+  robot rb2
+  variables
+    cantF:numero
+  comenzar
+    RecibirMensaje (cantF, B1)
+    recorrerFlor (cantF)
+    Pos(31,5)
+    RecibirMensaje(cantF,A1)
+    recorrerPap (cantF)
+    Informar('cantidad total de flores', cantF)
+  fin
+variables
+  A1: ra1
+  A2: ra2
+  B1: rb1
+  B2: rb2
+comenzar
+  AsignarArea(A1, areaA1a)
+  AsignarArea(A2, areaA2a)
+  AsignarArea(B1, areaB1a)
+  AsignarArea(B2, areaB2a)
+  AsignarArea(A1, areaA1b)
+  AsignarArea(A2, areaA2b)
+  AsignarArea(B1, areaB1b)
+  AsignarArea(B2, areaB2b)
+  Iniciar(A1, 1,1)
+  Iniciar(A2, 11,1)
+  Iniciar(B1, 1,5)
+  Iniciar(B2, 11,5)
+fin

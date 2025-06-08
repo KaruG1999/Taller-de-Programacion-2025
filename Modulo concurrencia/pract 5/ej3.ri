@@ -1,0 +1,92 @@
+{productor/consumidor.}
+programa ej3
+procesos
+  proceso accedeEsq (ES cantF:numero)
+  variables
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    mientras (HayFlorEnLaEsquina) 
+      tomarFlor
+      cantF:=cantF+1
+    Pos(avIni,caIni)
+    LiberarEsquina(10,10)
+  fin
+  proceso etapa
+  variables 
+    cantEsq, cantF:numero
+  comenzar
+    cantF :=0
+    cantEsq:=0
+    mientras (PosAv<100)&(cantF<10)&(cantEsq<15)
+      juntarF (cantF)
+      si (cantF<10)&(cantEsq<15)
+        mover
+        cantEsq:=cantEsq+1   {esquina act}
+    depositarF (cantF) {}
+  fin
+  proceso juntarF (ES cantF:numero)
+  comenzar
+    si (HayFlorEnLaEsquina) {a lo sumo 1 flor por esquina}
+      tomarFlor
+      cantF:=cantF+1
+  fin
+  proceso depositarF (ES cantF:numero) {en esq compartida}
+  variables
+    avAct,caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina (10,10)
+    Pos(10,10)
+    repetir cantF
+      depositarFlor
+    Pos(avAct,caAct)
+    LiberarEsquina(10,10)
+    cantF:=0 {reinicia cont}
+  fin
+areas
+  area1: AreaP (1,3,100,3)
+  area2: AreaP (1,4,100,4)
+  areac: AreaP (1,5,1,5)
+  fuente: AreaC (10,10,10,10)
+robots
+  robot recolector 
+  comenzar
+    derecha
+    mientras (PosAv<100)
+      etapa
+      EnviarMensaje(0,c) {si no termino envia 0}
+    EnviarMensaje(1,c) {cuando termina envia 1}
+  fin
+  robot cosechador
+  variables 
+    ok, aux:numero
+    cantF:numero
+  comenzar
+    cantF:=0
+    ok:=0
+    mientras (ok<>2)
+      RecibirMensaje(aux, *) {0 sigue y 1 termino}
+      accedeEsq (cantF)
+      ok:=ok+aux
+    Informar('cantF total', cantF)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  c: cosechador
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(c, areac)
+  AsignarArea(c, fuente)
+  Iniciar(r1, 1,3)
+  Iniciar(r2, 1,4)
+  Iniciar(c, 1,5)
+fin

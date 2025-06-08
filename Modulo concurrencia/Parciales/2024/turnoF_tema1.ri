@@ -1,0 +1,132 @@
+{Turno F - Tema 1.}
+
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,RA1)
+    EnviarMensaje(2,RA2)
+    EnviarMensaje(3,RB1)
+    EnviarMensaje(4,RB2)
+  fin
+  proceso etapa1 (ES cantf:numero)
+  comenzar
+    repetir 2
+      repetir 10
+        juntarF(cantf)
+        mover
+      derecha
+    juntarF(cantf)
+  fin
+  proceso etapa2 (ES cantf:numero)
+  comenzar
+    repetir 2
+      repetir 9
+        juntarF(cantf)
+        mover
+      derecha
+    juntarF(cantf)
+  fin
+  proceso juntarF (ES cantf:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:=cantf+1
+  fin
+  proceso depositarF (E cantf:numero) {deposita de A UNA}
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    repetir cantf
+      BloquearEsquina(20,20)
+      Pos(20,20)
+      depositarFlor
+      Pos(avIni,caIni)
+      LiberarEsquina(20,20)
+  fin
+areas
+  areaA: AreaPC (1,1,11,11)
+  areaB: AreaPC (13,1,23,11)
+  areaf: AreaP (30,1,30,1)
+  fuente: AreaPC (20,20,20,20) {fiscal no ingresa}
+robots
+  robot florero1
+  variables 
+    id,cantf:numero
+  comenzar
+    cantf:=0
+    RecibirMensaje(id, f)
+    etapa1 (cantf)
+    depositarF (cantf) {deja flores en fuente}
+    si (id=1)
+      EnviarMensaje(V,RA2) {caso equipo A}
+    sino
+      EnviarMensaje(V,RB2) {caso de que sea equipo B}
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantf,f)  
+  fin
+  robot florero2
+  variables 
+    id,cantf:numero
+    ok:boolean
+  comenzar
+    RecibirMensaje(id, f)
+    cantf:=0
+    si (id=2)
+      RecibirMensaje(ok,RA1)
+    sino
+      RecibirMensaje(ok,RB1)
+    repetir 2
+      derecha
+    etapa2 (cantf)  {hacen el mismo tramo(aca lo volteo)}
+    depositarF (cantf)
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantf, f)
+  fin
+  robot fiscal
+  variables 
+    id, fA, fB,cantf:numero
+  comenzar
+    asignaIds
+    fA:=0
+    fB:=0
+    repetir 4
+      RecibirMensaje(id,*)
+      RecibirMensaje(cantf,*)
+      si (id=1)|(id=2) {equipo A}
+        fA:= fA + cantf
+      sino
+        si (id=3)|(id=4)
+          fB:= fB + cantf
+    si (fA > fB)
+      Informar('gano equipo A',fA)
+    sino
+      si (fB > fA)
+        Informar('gano equipo B',fB)
+      sino
+        Informar('empate',fA)
+  fin
+variables
+  RA1: florero1
+  RA2: florero2
+  RB1: florero1
+  RB2: florero2
+  f: fiscal
+comenzar
+  AsignarArea(RA1, areaA)
+  AsignarArea(RA1, fuente)
+  AsignarArea(RA2, areaA)
+  AsignarArea(RA2, fuente)
+  AsignarArea(RB1, areaB)
+  AsignarArea(RB1, fuente)
+  AsignarArea(RB2, areaB)
+  AsignarArea(RB2, fuente)
+  AsignarArea(f, areaf)
+  Iniciar(RA1, 1,1)
+  Iniciar(RA2, 11,10)
+  Iniciar(RB1, 13,1)
+  Iniciar(RB2, 23,10)
+  Iniciar(f, 30,1)
+fin

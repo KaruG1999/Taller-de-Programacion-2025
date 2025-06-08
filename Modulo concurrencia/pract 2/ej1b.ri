@@ -1,0 +1,56 @@
+{Práctica 2 - Programación recurrente}
+
+programa ej1
+procesos
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        cantF := cantF + 1
+  fin
+  proceso recorrerAvenida(ES cantF: numero)
+  comenzar
+    repetir 9
+      juntarFlores(cantF)
+      mover
+    juntarFlores(cantF)
+  fin
+areas
+  area1: AreaP (1,1,1,10)
+  area2: AreaP (2,11,2,20)
+  areaf: AreaP (2,1,2,1)
+robots
+  robot recolector
+  variables 
+    cantF:numero
+  comenzar
+    cantF :=0
+    recorrerAvenida(cantF)
+    EnviarMensaje(cantF, f)  {es variable f o tipo robot}
+  fin
+  robot fiscal
+  variables 
+    f1,f2, dif:numero
+  comenzar
+    max:=0
+    RecibirMensaje(f1, *)
+    RecibirMensaje(f2, *)
+    si (f1 > f2)
+      dif:= f1-f2
+    sino
+      dif:= f2-f2
+    Informar('Diferencia',dif) 
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  f: fiscal
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area2)
+  AsignarArea(f, areaf)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 2,11)
+  Iniciar(f, 2,1)
+fin

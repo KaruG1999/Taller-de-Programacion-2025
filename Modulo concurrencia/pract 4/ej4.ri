@@ -1,0 +1,104 @@
+{Master/Slave.}
+
+programa ej4
+procesos
+  proceso recogerFlores 
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso recogerPap
+  comenzar
+    mientras  (HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso vaciarBolsa
+  comenzar
+    mientras (HayFlorEnLaBolsa)
+      depositarFlor
+    mientras (HayPapelEnLaEsquina)
+      depositarPapel
+  fin
+ 
+areas
+  ciudad: AreaPC (2,2,100,100)
+  area1: AreaP (2,1,2,1)
+  area2: AreaP (3,1,3,1)
+  areaj: AreaP (1,1,1,1)
+robots
+  robot trabajador
+  variables
+    av,ca,avIni,caIni, tarea:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    RecibirMensaje(tarea,j) {recibe numero de tarea}
+    mientras (tarea <> 4)
+      RecibirMensaje(av, j)
+      RecibirMensaje(ca, j)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      si (tarea=1)
+        recogerFlores
+      sino
+        si(tarea=2)
+          recogerPap
+        sino
+          vaciarBolsa
+      Pos(avIni,caIni)
+      LiberarEsquina(av,ca)
+      EnviarMensaje(V, j)  {avisa que ya esta libre}
+      RecibirMensaje(tarea, j) {queda la espera de otra tarea}  
+  fin
+  robot jefe
+  variables
+    t:numero {var para trabajador elegido}
+    tarea,av,ca:numero
+    trab1, trab2, ok:boolean
+  comenzar
+    trab1:=V
+    trab2:=V
+    repetir 10
+      si (trab1)&(trab2)   {si ambos estan libres elige 1 al azar}
+        Random(t,1,2)
+      sino
+        si (trab1)& ~(trab2) {si trabajador 1 libre y 2 ocupado}
+          t:=1
+        sino
+          t:=2
+          {porque random trea 1,4}
+      Random(tarea, 1,3)   {asigna tarea}
+      Random(av,2,100)
+      Random(ca,2,100)
+      si (t = 1)
+        trab1:= F  {lo marco como ocupado}
+        EnviarMensaje(tarea, r1)
+        EnviarMensaje(av, r1)
+        EnviarMensaje(ca, r1)
+        RecibirMensaje(ok, r1) {cuando termina recibe V}
+        trab1:= ok {vuelve a estar disponible} 
+      sino
+        trab2:=F
+        EnviarMensaje(tarea, r2)
+        EnviarMensaje(av, r2)
+        EnviarMensaje(ca, r2)
+        RecibirMensaje(ok, r2)
+        trab2:= ok
+    {al finalizar envia 4 para finalizar a ambos}
+    EnviarMensaje(4,r1)
+    EnviarMensaje(4,r2) 
+  fin
+variables
+  r1: trabajador
+  r2: trabajador
+  j: jefe
+comenzar
+  AsignarArea(r1, ciudad)
+  AsignarArea(r1, area1)
+  AsignarArea(r2, ciudad)
+  AsignarArea(r2, area2)
+  AsignarArea(j, areaj)
+  Iniciar(j,1,1)
+  Iniciar(r1,2,1)
+  Iniciar(r2,3,1)
+fin

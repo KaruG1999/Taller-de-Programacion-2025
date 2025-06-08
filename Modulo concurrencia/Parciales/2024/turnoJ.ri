@@ -1,0 +1,179 @@
+{Turno J.}
+
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso izq 
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso escalonF (ES cantf:numero)
+  comenzar
+    repetir 4
+      juntarF(cantf)
+      mover
+    derecha
+    repetir 3
+      juntarF(cantf)
+      mover
+    izq
+  fin
+  proceso juntarF(ES cantf:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:=cantf+1
+  fin
+  proceso escalonP (ES cantp:numero)
+  comenzar
+    repetir 4
+      juntarP(cantp)
+      mover
+    derecha
+    repetir 3
+      juntarP(cantp)
+      mover
+    izq
+  fin
+  proceso juntarP(ES cantp:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cantp:=cantp+1
+  fin
+  proceso depositarF (E cantf:numero)
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    repetir cantf
+      BloquearEsquina(99,99)
+      Pos(99,99)
+      depositarFlor
+      Pos(avIni,caIni)
+      LiberarEsquina(99,99)
+  fin
+  proceso depositarP (E cantp:numero)
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    repetir cantp
+      BloquearEsquina(98,98)
+      Pos(98,98)
+      depositarPapel
+      Pos(avIni,caIni)
+      LiberarEsquina(98,98)
+  fin
+  proceso vaciarDepoF  (E totf:numero)
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    Pos(99,99)
+    repetir totf
+      tomarFlor
+    Pos(avIni,caIni)
+  fin
+  proceso vaciarDepoP  (E totp:numero)
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    Pos(98,98)
+    repetir totp
+      tomarPapel
+    Pos(avIni,caIni)
+  fin
+areas
+  areaf: AreaP (1,1,1,1)
+  fuenteP: AreaC (98,98,98,98)
+  fuenteF: AreaC (99,99,99,99)
+  area1: AreaP (2,1,11,13) {calculo 1 mas ancho y alto}
+  area2: AreaP (32,1,41,13)
+  area3: AreaP (62,1,71,13)
+robots
+  robot recolector
+  variables 
+    id,t,cantp,cantf:numero
+  comenzar
+    cantp:=0
+    cantf:=0
+    RecibirMensaje(id,f)
+    repetir 3
+      EnviarMensaje(id, f)
+      RecibirMensaje(t, f)  {recibe tarea}
+      si (t=1)
+        escalonF(cantf)
+      sino
+        escalonP(cantp) 
+    depositarF (cantf)
+    depositarP (cantp)
+    EnviarMensaje(0, f)
+    EnviarMensaje(cantf,f)
+    EnviarMensaje(cantp,f)
+  fin
+  robot fiscal
+  variables 
+    id,t:numero
+    fuenteP, fuenteF,cantf,cantp:numero
+  comenzar
+    fuenteF:=0
+    fuenteP:=0
+    asignaIds
+    repetir 12
+      RecibirMensaje(id,*)  {para ident a quien envio tarea}
+      Random(t,1,2)
+      si(id=1)
+        EnviarMensaje(t, r1)
+      sino
+        si (id=2)
+          EnviarMensaje(t,r2)
+        sino
+          si (id=3)
+            EnviarMensaje(t,r3)
+          sino                       {si recibe 0 es porque robot termino}
+            RecibirMensaje(cantf, *)  {seguido suma cantidades que deposito en cda esq a cada total}
+            fuenteF:= fuenteF+ cantf
+            RecibirMensaje(cantp, *)
+            fuenteP:= fuenteP+ cantp
+    si (fuenteF < fuenteP)
+      vaciarDepoF(fuenteF)
+      Informar('junte flores',fuenteF)
+    sino
+      vaciarDepoP(fuenteP)
+      Informar('junte pap',fuenteP)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector
+  f: fiscal
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuenteP)
+  AsignarArea(r1, fuenteF)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuenteP)
+  AsignarArea(r2, fuenteF)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuenteP)
+  AsignarArea(r3, fuenteF)
+  AsignarArea(f, areaf)
+  AsignarArea(f, fuenteP)
+  AsignarArea(f, fuenteF)
+  Iniciar(f, 1,1)
+  Iniciar(r1,2,1)
+  Iniciar(r2,32,1)
+  Iniciar(r3,62,1)
+fin

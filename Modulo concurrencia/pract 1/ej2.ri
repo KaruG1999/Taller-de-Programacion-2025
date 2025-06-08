@@ -1,0 +1,59 @@
+{}
+
+programa ejemplo
+procesos 
+  proceso juntarPapeles (ES pap:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      pap := pap+1
+  fin
+  proceso recorrerLado
+  variables 
+    pap:numero
+  comenzar
+    pap:=0
+    repetir 20
+      juntarPapeles (pap)
+      mover
+    Informar(pap)
+  fin
+areas
+  ciudad: AreaPC (10,10,30,30) {empieza en (10,10)}
+robots
+  robot robot1
+  comenzar
+    recorrerLado
+  fin
+  robot robot2
+  comenzar
+    derecha
+    recorrerLado 
+  fin
+  robot robot3
+  comenzar
+    repetir 2
+      derecha
+    recorrerLado
+  fin
+  robot robot4
+  comenzar
+    repetir 3
+      derecha
+    recorrerLado
+  fin
+variables
+  r1: robot1
+  r2: robot2
+  r3: robot3
+  r4: robot4
+comenzar
+  AsignarArea(r1, ciudad)
+  AsignarArea(r2, ciudad)
+  AsignarArea(r3, ciudad)
+  AsignarArea(r4, ciudad)
+  Iniciar(r1, 10,10)
+  Iniciar(r2, 10,30)
+  Iniciar(r3, 30,30)
+  Iniciar(r4, 30,10)
+fin

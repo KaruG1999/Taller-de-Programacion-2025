@@ -1,0 +1,91 @@
+{.}
+
+programa ej5
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    EnviarMensaje(4,r4)
+  fin
+  proceso actualizaMax (E ca:numero; ES caMax:numero; E id:numero; ES idMax:numero)
+  comenzar
+    si (ca>caMax)
+      caMax:= ca
+      idMax:=id
+  fin
+areas
+  area1: AreaP (4,1,4,100)
+  area2: AreaP (6,1,6,100)
+  area3: AreaP (8,1,8,100)
+  area4: AreaP (10,1,10,100)
+  fuente: AreaPC (11,11,11,11)  {es PC teniendo en cuenta que el cord no entra?}
+  areac: AreaP (1,1,1,1)  {no especifica esq}
+robots
+  robot corredor
+  variables 
+    ok:boolean
+    id:numero
+    avAct,caAct:numero
+  comenzar
+    RecibirMensaje(id, cord)
+    ok:=V
+    mientras (ok) & (PosCa<100) 
+      avAct:=PosAv
+      caAct:=PosCa
+      BloquearEsquina(11,11)
+      Pos(11,11)
+      si (HayPapelEnLaEsquina)
+        tomarPapel
+        Pos(avAct,caAct)
+        depositarPapel
+        mover
+      sino
+        EnviarMensaje(id, cord)
+        EnviarMensaje(caAct, cord) {calle que tan lejos llego}
+        ok:=F
+        Pos(avAct,caAct)
+      LiberarEsquina(11,11)
+  fin
+  robot coordinador 
+  variables 
+    ca, caMax:numero
+    id, idMax:numero
+  comenzar
+    caMax:=-1
+    asignaIds
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id=1)
+        RecibirMensaje(ca, r1)
+      sino
+        si(id=2)
+          RecibirMensaje(ca,r2)
+        sino
+          si(id=3)
+            RecibirMensaje(ca,r3)
+          sino
+            RecibirMensaje(ca,r4)
+      actualizaMax(ca, caMax,id, idMax)  
+    Informar('ganador', idMax)    
+  fin
+variables
+  r1, r2, r3, r4: corredor
+  cord:coordinador
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuente)
+  AsignarArea(r4, area4)
+  AsignarArea(r4, fuente)
+  AsignarArea(cord, areac)
+  Iniciar(cord, 1,1)
+  Iniciar(r1,4,1)
+  Iniciar(r2,6,1)
+  Iniciar(r3,8,1)
+  Iniciar(r4,10,1)
+fin

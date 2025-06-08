@@ -1,0 +1,118 @@
+{Sincronización barrera}
+
+programa ej2
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso juntarF (ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF+1
+  fin
+  proceso vaciarEsq (ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:=cantF+1
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso depositarF (ES cantF:numero)
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina (50,50)
+    Pos(50,50)
+    repetir cantF
+      depositarFlor
+    Pos(avAct,caAct)
+    LiberarEsquina(50,50)
+    cantF:=0 {actualizo cantF}
+  fin
+  proceso barrera (E id:numero)
+  variables 
+    ok:boolean
+  comenzar
+    si (id = 1)
+      EnviarMensaje(V, r2)
+      EnviarMensaje(V, r3)
+      RecibirMensaje(ok, r2)
+      RecibirMensaje(ok, r3)
+    sino
+      si (id = 2)
+        EnviarMensaje(V, r1)
+        EnviarMensaje(V, r3)
+        RecibirMensaje(ok, r1)
+        RecibirMensaje(ok, r3)
+      sino
+        EnviarMensaje(V, r1)
+        EnviarMensaje(V, r2)
+        RecibirMensaje(ok, r1)
+        RecibirMensaje(ok, r2)
+  fin
+areas
+  area1: AreaP (1,1,100,1)
+  area2: AreaP (1,2,100,2)
+  area3: AreaP (1,3,100,3)
+  areaf: AreaP (1,4,1,4)
+  fuente: AreaC (50,50,50,50)
+robots
+  robot fiscal
+  variables 
+    cantF, id:numero
+  comenzar
+    cantF:=0
+    asignaIds
+    repetir 3
+      RecibirMensaje(id, *)
+    Pos(50,50)
+    juntarF (cantF)
+    Informar ('cantF',cantF)
+  fin
+  robot recolector
+  variables 
+    id,cantF:numero
+    ok:boolean
+  comenzar
+    cantF:=0
+    derecha
+    RecibirMensaje(id, f)
+    repetir 9           {primeras 10 esquinas}
+      vaciarEsq (cantF)
+      mover
+    depositarF(cantF)   {deposita en fuente}
+    barrera(id)            {avisa y espera el siguiente ok}
+    repetir 9           {90 esq restantes}
+      repetir 10
+        mover
+        vaciarEsq (cantF)
+      depositarF (cantF)
+      barrera(id)
+    EnviarMensaje(id, f) {avisa que termino con el envio de id}
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector
+  f: fiscal
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuente)
+  AsignarArea(f, areaf)
+  AsignarArea(f, fuente)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 1,2)
+  Iniciar(r3, 1,3)
+  Iniciar(f, 1,4)
+fin

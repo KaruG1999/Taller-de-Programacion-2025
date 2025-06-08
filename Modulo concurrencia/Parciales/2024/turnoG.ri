@@ -1,0 +1,128 @@
+{Turno G.}
+ 
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+  fin
+  proceso recorrerAv (ES cantf:numero; ES cantp:numero)
+  comenzar
+    cantf:=0
+    cantp:=0 {al comenzar cada av reinicio contador}
+    repetir 99 
+      juntarFyP (cantf, cantp)
+      mover 
+    juntarFyP (cantf, cantp)
+  fin
+  proceso juntarFyP (ES cantf:numero; ES cantp:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:=cantf+1
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantp:= cantp+1
+  fin
+  proceso limpiarEsq
+  comenzar
+    derecha
+    Pos(40,40)
+    repetir 5 {primera calle}
+      limpiar
+      mover
+    limpiar
+    repetir 5
+      Pos(40,PosCa+1)
+      repetir 5
+        limpiar
+        mover
+      limpiar
+  fin
+  proceso limpiar
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+  fin    
+  proceso depoRecolectado (E cantf:numero; E cantp:numero; E av:numero; E ca:numero;E avAct:numero)
+  comenzar
+    repetir cantf
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      depositarFlor
+      Pos(avAct,100)
+      LiberarEsquina(av,ca)
+    repetir cantp
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      depositarPapel
+      Pos(avAct,100)
+      LiberarEsquina(av,ca)
+  fin
+areas
+  areac: AreaP (1,1,1,1)
+  fuente: AreaC (40,40,45,45)
+  areaR: AreaPC (4,1,11,100)
+robots
+  robot recolector
+  variables 
+    id, avSig,avAct, av,ca:numero
+    cantf,cantp:numero
+  comenzar
+    RecibirMensaje(id, c)
+    repetir 3
+      recorrerAv (cantf, cantp)
+      EnviarMensaje(id, c)
+      RecibirMensaje(av, c)
+      RecibirMensaje(ca, c)
+      avAct:=PosAv
+      depoRecolectado (cantf,cantp, av,ca,avAct)
+      avSig:= avAct+2
+      Pos(avSig,1)
+    recorrerAv (cantf, cantp)  {ult av no debe moverse a prox av}
+    EnviarMensaje(id, c)
+    RecibirMensaje(av, c)
+    RecibirMensaje(ca, c)
+    depoRecolectado (cantf,cantp, av,ca,avAct)
+    EnviarMensaje(id, c) {avisa que finalizo}
+  fin
+  robot coordinador
+  variables 
+    id:numero
+    av,ca,ganador:numero
+  comenzar
+    asignaIds 
+    repetir 8
+      RecibirMensaje(id,*)  {cuando recibe 0 3 veces termina}
+      Random(av,40,45)
+      Random(ca,40,45)
+      si (id=1)
+        EnviarMensaje(av, r1)
+        EnviarMensaje(ca, r1)
+      sino
+        EnviarMensaje(av, r2)
+        EnviarMensaje(ca, r2)      
+    RecibirMensaje(id, *)   {el primero que recibe es el ganador}
+    ganador := id
+    RecibirMensaje(id, *)  {recibe al robot perdedor}
+    limpiarEsq
+    Informar('r ganador', ganador)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  c: coordinador 
+comenzar
+  AsignarArea(r1, areaR)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, areaR)
+  AsignarArea(r2, fuente)
+  AsignarArea(c, areac)
+  AsignarArea(c, fuente)
+  Iniciar(c, 1,1)
+  Iniciar(r1,4,1)
+  Iniciar(r2,5,1)
+fin

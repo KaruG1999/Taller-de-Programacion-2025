@@ -1,0 +1,56 @@
+{}
+programa ej1
+procesos
+  proceso juntarFlor (ES cantF:numero; ES cantEsq:numero)
+  comenzar
+    si(HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor 
+        cantF = cantF + 1
+    sino
+      cantEsq = cantEsq + 1
+  fin
+  proceso recorrerAvenida (ES cantF:numero; ES cantEsq:numero){recorrer av 1}
+  comenzar
+    juntarFlor (cantF, cantEsq)
+    repetir 99
+      mover
+      juntarFlor (cantF, cantEsq)
+  fin
+  proceso depositarFlores (E cantF:numero)
+  comenzar
+    repetir cantF 
+      depositarFlor
+  fin
+areas
+  {areaP (avIni, caIni, avFin, caFin)}
+  area1: AreaP (1,1,1,100)
+  area2: AreaP (3,1,3,100)
+  area3: AreaP (5,1,5,100)
+robots
+  robot robot1 
+  variables 
+    cantF:numero
+    cantEsq:numero
+  comenzar
+    cantF = 0
+    cantEsq =0
+    recorrerAvenida(cantF, cantEsq)  {junta flores y cuenta esq vacias}
+    depositarFlores(cantF)            {al finalizar deposita e imprime}
+    Informar(cantF)
+    Informar(cantEsq)
+  fin
+variables
+  R_info: robot1   {cada robot recorre una avenida}
+  robot2: robot1
+  robot3: robot1
+comenzar
+  AsignarArea(R_info, area1)
+  Iniciar(R_info, 1,1)
+  
+  AsignarArea(robot2, area2)
+  Iniciar (robot2, 3,1)
+  
+  AsignarArea(robot3, area3)
+  Iniciar (robot3, 5,1)
+fin

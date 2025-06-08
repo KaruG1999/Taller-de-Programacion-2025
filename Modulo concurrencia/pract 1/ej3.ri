@@ -1,0 +1,65 @@
+{Comparir recursos: esquinas.Comunicarse: Pasaje mensajes(canal, enviar/recibir) / Mem compartida(obj en esquinas).Sincronización: acceso de a 1 esquina compartida no chocar).
+Tener en cuenta: _Areas _Tipos de robot _Variables robots _AsignarArea(varRobot, nomArea) _Iniciar(varRobot, av, ca)}
+programa ejemplo
+procesos
+  proceso juntarPapeles (ES pap:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      pap:= pap+1
+  fin
+  proceso juntarFlores (ES flores: numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      flores:= flores+1
+  fin
+  proceso escalon (ES flores:numero; ES pap:numero; E pasos:numero)
+  comenzar
+    repetir 2
+      repetir pasos
+        juntarPapeles(pap)
+        juntarFlores(flores)
+        mover
+      derecha
+    repetir 2
+      derecha
+  fin
+  proceso recorrerEscalera (ES cantEsc:numero)
+  variables 
+    flores:numero
+    pap:numero
+    pasos:numero
+  comenzar
+    pasos:=1
+    repetir 4
+      flores:=0
+      pap:=0
+      escalon (flores, pap, pasos)
+      pasos := pasos +1
+      si (pap - flores = 1)
+        cantEsc:= cantEsc + 1 
+  fin
+areas
+  ciudad: AreaC (1,1,100,100)
+robots
+  robot robot1
+  variables 
+    cantEsc:numero
+  comenzar
+    cantEsc:=0
+    recorrerEscalera (cantEsc)
+    Informar(cantEsc)
+  fin
+variables
+  r1: robot1
+  r2: robot1
+  r3: robot1
+comenzar
+  AsignarArea(r1, ciudad)
+  AsignarArea(r2, ciudad)
+  AsignarArea(r3, ciudad)
+  Iniciar(r1, 12,14)
+  Iniciar(r2, 17,10)
+  Iniciar(r3, 22,6)
+fin

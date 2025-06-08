@@ -1,0 +1,122 @@
+{Cliente / servidor.
+Servidor: 
+- sirve a 3 clientes entre 1 y 4 flores en la esquina siguiente a la que el cl esta posicionado.
+- El servidor asigna ids a clientes para identificarlos 
+Cliente: 
+- Solicita cant random de flores a servidor y una vez que las deja en la siguiente esquina, las junta y las deposita una a una en avenida. 
+- termina cuando completan su avenida.
+}
+
+programa ej1
+procesos
+  proceso asignaIds 
+  comenzar
+    EnviarMensaje(1, r1)
+    EnviarMensaje(2, r2)
+    EnviarMensaje(3, r3)
+  fin
+  proceso avanza
+  comenzar
+    mientras ((HayFlorEnLaBolsa) & (PosCa<100))
+      depositarFlor
+      mover 
+    si (HayFlorEnLaBolsa) & (PosCa=100)
+      depositarFlor
+  fin
+areas
+  areaS: AreaP (100,100,100,100)
+  area1: AreaPC (1,1,1,100)
+  area2: AreaPC (2,1,2,100)
+  area3: AreaPC (3,1,3,100)
+robots
+  robot cliente 
+  variables
+    cantF, id:numero
+    ack:boolean
+    av,ca:numero
+  comenzar
+    RecibirMensaje(id, s)      {identificador}
+    mientras (PosCa < 100)
+      Random(cantF, 1,4)
+      EnviarMensaje(id, s)
+      EnviarMensaje(cantF, s)
+      av:= PosAv               {!importante: usar av y ca}
+      ca:= PosCa+1
+      EnviarMensaje(av, s)
+      EnviarMensaje(ca, s)
+      RecibirMensaje(ack, s)   {recibe el ok}
+      Pos(av, ca)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+      Pos(av,ca-1)
+      avanza
+    EnviarMensaje(id, s)
+    EnviarMensaje(0, s) {si termina envia 0 al servidor } 
+    {sino sigue hasta el final de calle }
+  fin
+  robot servidor
+  variables 
+    id, nF:numero
+    av,ca:numero
+    ok:numero
+  comenzar
+    asignaIds
+    ok:= 0  
+    mientras (ok <> 3)  {mientras los 3 no hayan terminado}
+      RecibirMensaje(id, *)
+      si(id=1)
+        RecibirMensaje(nF, r1)
+        si (nF <> 0)   
+          RecibirMensaje(av, r1)
+          RecibirMensaje(ca, r1)
+          Pos(av,ca)
+          repetir nF
+            depositarFlor
+          Pos(100,100) 
+          EnviarMensaje(V, r1)
+        sino
+          ok:=ok+1 {cuando recibe 0 suma 1 al contador de finalizados}
+      sino 
+        si (id=2)
+          RecibirMensaje(nF,r2)
+          si (nF<>0)
+            RecibirMensaje(av,r2)
+            RecibirMensaje(ca,r2)
+            Pos(av,ca)
+            repetir nF
+              depositarFlor
+            Pos(100,100)
+            EnviarMensaje(V, r2)
+          sino
+            ok:=ok+1
+        sino 
+          RecibirMensaje(nF, r3)
+          si (nF <> 0)
+            RecibirMensaje(av,r3)
+            RecibirMensaje(ca,r3)
+            Pos(av,ca)
+            repetir nF
+              depositarFlor
+            Pos(100,100)
+            EnviarMensaje(V,r3)
+          sino
+            ok:=ok+1
+  fin
+variables
+  s: servidor
+  r1: cliente
+  r2: cliente 
+  r3: cliente 
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area2)
+  AsignarArea(r3, area3)
+  AsignarArea(s, areaS)
+  AsignarArea(s, area1)
+  AsignarArea(s, area2)
+  AsignarArea(s, area3)
+  Iniciar(s, 100,100)
+  Iniciar(r1,1,1)
+  Iniciar(r2,2,1)
+  Iniciar(r3,3,1)
+fin

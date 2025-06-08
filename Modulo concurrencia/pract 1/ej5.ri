@@ -1,0 +1,116 @@
+
+programa ej5
+procesos
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    si(HayFlorEnLaEsquina)
+      mientras(HayFlorEnLaEsquina)
+        tomarFlor
+        cantF:= cantF+1
+  fin
+  proceso depositarFlores (E cantF:numero)
+  comenzar
+    repetir cantF
+      depositarFlor
+  fin
+  proceso recorrerCalle (E cantEsq:numero)
+  variables 
+    cantF:numero
+  comenzar
+    cantF:=0
+    repetir cantEsq
+      juntarFlores (cantF)
+      mover
+    juntarFlores (cantF)
+    depositarFlores(cantF)
+  fin
+  proceso juntarPapeles (ES cantP:numero)
+  comenzar
+    si (HayPapelEnLaEsquina)
+      mientras (HayPapelEnLaEsquina)
+        tomarPapel
+        cantP:= cantP+1
+  fin
+  proceso depositarPapeles(E cantP:numero)
+  comenzar
+    repetir cantP
+      depositarPapel
+  fin
+  proceso recorrerAv (E cantEsq:numero)
+  variables
+    cantP:numero
+    avIni, caIni: numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    cantP:=0
+    repetir cantEsq
+      juntarPapeles (cantP)
+      mover
+    juntarPapeles (cantP)
+    Pos(avIni,caIni)
+    depositarPapeles(cantP)
+  fin
+areas
+  area1A: AreaP (1,80,16,80)  {15}
+  area1B: AreaP (1,75,16,75)
+  area2A: AreaP (75,80,75,100) {20}
+  area2B: AreaP (80,80,80,100)
+  area3A: AreaP (70,15,100,15)  {30}
+  area3B: AreaP (70,10,100,10)
+  area4A: AreaP (10,1,10,11)   {10}
+  area4B: AreaP (15,1,15,11)  
+robots
+  robot robotF1
+  variables 
+    cantEsq:numero
+  comenzar
+    derecha
+    recorrerCalle (15)
+    Pos(1,PosCa+5) {}
+    recorrerCalle(15)
+  fin
+  robot robotP1
+  variables 
+    cantEsq:numero
+  comenzar
+    recorrerAv(20)
+    Pos(PosAv+5, 80)
+    recorrerAv(20)
+  fin
+  robot robotF2
+  variables 
+    cantEsq:numero
+  comenzar
+    derecha
+    recorrerCalle (30)
+    Pos(70,PosCa+5) {}
+    recorrerCalle (30)
+  fin
+  robot robotP2
+  variables 
+    cantEsq:numero
+  comenzar
+    recorrerAv(10)
+    Pos(PosAv+5, 1)
+    recorrerAv(10)
+  fin
+variables
+  r1: robotF1
+  r2: robotP1
+  r3: robotF2
+  r4: robotP2
+comenzar
+  AsignarArea(r1, area1A)
+  AsignarArea(r1, area1B)
+  AsignarArea(r2, area2A)
+  AsignarArea(r2, area2B)
+  AsignarArea(r3, area3A)
+  AsignarArea(r3, area3B)
+  AsignarArea(r4, area4A)
+  AsignarArea(r4, area4B)
+  Iniciar(r1, 1,75)
+  Iniciar(r2, 75,80)
+  Iniciar(r3, 70,10)
+  Iniciar(r4, 10, 1)
+fin

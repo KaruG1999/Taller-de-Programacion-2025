@@ -1,0 +1,105 @@
+{En 1C idem pero no necesita tener en cuenta los ids, ya que informa cant max, no id robot ganador}
+
+programa ej1
+procesos
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        cantF := cantF + 1
+  fin
+  proceso recorrerAvenida(ES cantF: numero)
+  comenzar
+    repetir 9
+      juntarFlores(cantF)
+      mover
+    juntarFlores(cantF)
+  fin
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+    EnviarMensaje(4,r4)
+    EnviarMensaje(5,r5)
+    EnviarMensaje(6,r6)
+  fin
+  proceso actualizaMax (E cantF: numero; ES maxF: numero; E id:numero; ES maxId:numero)
+  comenzar
+    si (cantF > maxF)
+      maxF:= cantF
+      maxId := id
+  fin
+areas
+  area1: AreaP (1,1,1,10)
+  area2: AreaP (2,11,2,20)
+  area3: AreaP (3,21,3,30)
+  area4: AreaP (4,31,4,40)
+  area5: AreaP (5,41,5,50)
+  area6: AreaP (6,51,6,60)
+  areaf: AreaP (2,1,2,1)
+robots
+  robot recolector
+  variables 
+    cantF, id:numero
+  comenzar
+    cantF :=0
+    RecibirMensaje(id, f)
+    recorrerAvenida(cantF)
+    EnviarMensaje(id,f)
+    EnviarMensaje(cantF, f)  {variable f robot tipo fiscal}
+  fin
+  robot fiscal
+  variables 
+    f, id:numero
+    maxF, maxId: numero
+  comenzar
+    maxF:=-1
+    asignaIds
+    repetir 6    {recibo un mensaje de cada robot}
+      RecibirMensaje(id, *)   {recibo id y cantidad del mismo canal}
+      si (id=1)
+        RecibirMensaje(f, r1)
+      sino
+        si (id=2)
+          RecibirMensaje(f, r2)
+        sino
+          si (id=3)
+            RecibirMensaje (f,r3)
+          sino
+            si (id=4)
+              RecibirMensaje(f,r4)
+            sino
+              si (id=5)
+                RecibirMensaje (f,r5)
+              sino
+                RecibirMensaje (f, r6)
+    actualizaMax (f,maxF, id, maxId)  
+    Informar('Ganador',maxId) 
+    Informar('Cant max', maxF)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector
+  r4: recolector
+  r5: recolector
+  r6: recolector
+  f: fiscal
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area2)
+  AsignarArea(r3, area3)
+  AsignarArea(r4, area4)
+  AsignarArea(r5, area5)
+  AsignarArea(r6, area6)
+  AsignarArea(f, areaf)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 2,11)
+  Iniciar(r3, 3,21)
+  Iniciar(r4, 4,31)
+  Iniciar(r5, 5,41)
+  Iniciar(r6, 6,51)
+  Iniciar(f, 2,1)
+fin

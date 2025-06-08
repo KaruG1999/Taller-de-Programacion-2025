@@ -1,0 +1,123 @@
+{.}
+
+programa ej1
+procesos
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF+1
+  fin
+  proceso depositoFlores (E cantF:numero)
+  comenzar
+    repetir cantF
+      depositarFlor
+  fin
+  proceso depositaFlores (E cantF:numero; E avIni: numero; E caIni:numero )
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    depositoFlores(cantF)
+    Pos(avIni, caIni)
+    LiberarEsquina(10,10)
+  fin
+  proceso acceder (ES cantP:numero; E avIni:numero; E caIni: numero)
+  variables 
+    av, ca:numero
+  comenzar
+    repetir 3
+      Random(av, 6,10)
+      Random(ca, 1,9)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      juntarPap(cantP)
+      Pos(avIni, caIni)
+      LiberarEsquina(av,ca)
+  fin
+  proceso depositarPapeles (E cantP: numero; E avIni: numero; E caIni:numero)
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    depositoPap(cantP)
+    Pos(avIni,caIni)
+    LiberarEsquina(10,10)
+  fin
+  proceso juntarPap (ES cantP: numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:= cantP+1
+  fin
+  proceso depositoPap (E cantP:numero)
+  comenzar
+    repetir cantP
+      depositarPapel
+  fin
+areas
+  areaF: AreaPC (1,1,5,10)   {area compartida ambos floreros}
+  areaP: AreaPC (6,1,10,9)    {area compart de ambos pap}
+  areaf1: AreaP (6,10,6,10)
+  areaf2: AreaP (7,10,7,10)
+  areap1: AreaP (8,10,8,10)
+  areap2: AreaP (9,10,9,10)
+  areaC: AreaC (10,10,10,10)
+robots
+  robot florero
+  variables 
+    avIni, caIni:numero
+    av,ca:numero {random dentro del area}
+    cantF:numero
+  comenzar
+    cantF:=0
+    avIni:= PosAv
+    caIni:= PosCa
+    repetir 5
+      Random(av,1,5)
+      Random(ca,1,10)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      juntarFlores(cantF)
+      Pos(avIni,caIni)
+      LiberarEsquina(av,ca)
+    {al finalizar depositan todo en esq( 10,10)}
+    depositaFlores(cantF, avIni,caIni)
+  fin
+  robot papelero
+  variables 
+    avIni, caIni:numero
+    cantP:numero
+  comenzar
+    cantP:=0
+    avIni:= PosAv
+    caIni:= PosCa
+    acceder (cantP, avIni, caIni)
+    depositarPapeles(cantP, avIni, caIni)
+  fin
+variables
+  f1: florero
+  f2: florero
+  p1: papelero
+  p2: papelero
+  
+comenzar
+  AsignarArea(f1, areaF)
+  AsignarArea(f1, areaf1)
+  AsignarArea(f1, areaC)
+  
+  AsignarArea(f2, areaF)
+  AsignarArea(f2, areaf2)
+  AsignarArea(f2, areaC)
+  
+  AsignarArea(p1, areaP)
+  AsignarArea(p1, areap1)
+  AsignarArea(p1, areaC)
+  
+  AsignarArea(p2, areaP)
+  AsignarArea(p2, areap2)
+  AsignarArea(p2, areaC)
+  
+  Iniciar(f1, 6,10)
+  Iniciar(f2, 7,10)
+  Iniciar(p1, 8,10)
+  Iniciar(p2, 9,10)
+fin

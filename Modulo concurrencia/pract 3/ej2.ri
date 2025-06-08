@@ -1,0 +1,155 @@
+
+programa ej2
+procesos
+  proceso decreF (ES n:numero; ES cantF:numero)
+  comenzar
+    repetir 4
+      escalonF(n, cantF)
+      n:=n-1
+  fin
+  proceso escalonF (ES n:numero; ES cantF:numero)  
+  comenzar
+    repetir n
+      mover
+    juntarF(cantF)
+    derecha
+    repetir n
+      mover
+    juntarF(cantF)
+    izq
+  fin
+  proceso juntarF(ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF+1
+  fin
+  proceso volver   {usado para dar la vuelta en (15,15)}
+  comenzar
+    repetir 2
+      derecha
+    mover 
+  fin
+  proceso crecF (E n:numero; ES cantF:numero)
+  comenzar
+    repetir 4
+      escalonF (n, cantF)
+      n:= n+1
+  fin
+  proceso decreP (ES n:numero; ES cantP:numero)
+  comenzar
+    repetir 4
+      escalonP (n, cantP)
+      n:= n-1
+    avanzaAMetaP
+  fin
+  proceso escalonP (E n:numero; ES cantP:numero)
+  comenzar
+    repetir n
+      mover 
+    juntarPap(cantP)
+    izq
+    repetir n
+      mover 
+    juntarPap(cantP)
+    derecha
+  fin
+  proceso juntarPap(ES cantP:numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:=cantP+1
+  fin
+  proceso avanzaAMetaP 
+  variables 
+    av,ca:numero
+  comenzar
+    mover 
+    av:=PosAv
+    ca:=PosCa
+    izq
+    BloquearEsquina(15,16)
+    Pos(15,16)
+    EnviarMensaje(2, j)
+    repetir 2
+      derecha  {doy vuelta y vuelvo}
+    Pos(av,ca)
+    LiberarEsquina(15,16)
+  fin
+  proceso crecP (E n:numero; ES cantP:numero)
+  comenzar
+    repetir 4   {n crece(2,3,4,5)}
+      juntarPap(cantP)
+      repetir n
+        mover 
+      juntarPap(cantP)
+      izq
+      repetir n
+        mover 
+      derecha
+      n:= n+1
+  fin
+  proceso izq 
+  comenzar
+    repetir 3
+      derecha
+  fin
+areas
+  areaJ: AreaP (16,1,16,1) {no me daban las dimensiones}
+  area1: AreaP (1,1,15,31)
+  area2: AreaP (17,1,31,31)
+  areaM: AreaPC(16,16,16,16)
+robots
+  robot florero
+  variables 
+    cantF:numero
+    n:numero
+  comenzar
+    cantF:=0
+    n:=5
+    decreF (n, cantF) {avanza hasta meta}
+    mover
+    derecha
+    BloquearEsquina(15,16)
+    Pos(15,16)
+    EnviarMensaje(1,j)  {aviso que llegue a meta id = 1}
+    volver 
+    LiberarEsquina(15,16)
+    crecF (n, cantF)  
+    Informar ('cant flores', cantF)
+  fin
+  robot papelero
+  variables 
+    n:numero
+    cantP:numero
+  comenzar
+    cantP:=0
+    n:=5
+    decreP(n, cantP)
+    crecP(n, cantP)
+    Informar('cant papeles', cantP)
+  fin
+  robot jefe
+  variables
+    ganador, id:numero
+  comenzar
+    RecibirMensaje(ganador, *)  {primero en llegar es el ganador }
+    RecibirMensaje(id, *)
+    Informar('Robot ganador',ganador)
+    {deben avisar cuando terminaron?}
+  fin
+variables
+  r1: florero
+  r2: papelero
+  j: jefe
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, areaM)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, areaM)
+  AsignarArea(j, areaJ)
+  
+  Iniciar(j,16,1)
+  Iniciar(r1,1,1)
+  Iniciar(r2,31,1)
+fin

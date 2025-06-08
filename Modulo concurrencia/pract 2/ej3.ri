@@ -1,0 +1,87 @@
+{.}
+programa ej3
+procesos
+  proceso juntarPap (ES cantP: numero)
+  comenzar
+    si (HayPapelEnLaEsquina)
+      mientras (HayPapelEnLaEsquina)
+        tomarPapel
+        cantP:= cantP+1
+  fin
+  proceso juntarF (ES cantF: numero)
+  comenzar
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        cantF:= cantF+1
+  fin
+  proceso recorrerPap(ES cantP: numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarPap(cantP)
+      mover
+    juntarPap (cantP)
+  fin
+  proceso recorrerFlor (ES cantF: numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarF(cantF)
+      mover
+    juntarF(cantF)
+  fin
+areas
+  areaA1: AreaP (1,1,10,1)
+  areaA2: AreaP (11,1,20,1)
+  areaB1: AreaP (1,5,10,5)
+  areaB2: AreaP (11,5,20,5)
+robots
+  robot ra1
+  variables
+    cantP:numero
+  comenzar
+    cantP:=0
+    recorrerPap (cantP)
+    EnviarMensaje(cantP, A2)
+  fin
+  robot ra2
+  variables
+    cantP:numero
+  comenzar
+    RecibirMensaje (cantP, A1)
+    recorrerPap (cantP)
+    Informar('cantidad total de flores', cantP)
+  fin
+  robot rb1
+  variables
+    cantF:numero
+  comenzar
+    cantF:=0
+    recorrerFlor (cantF)
+    EnviarMensaje(cantF, B2)
+  fin
+  robot rb2
+  variables
+    cantF:numero
+  comenzar
+    RecibirMensaje (cantF, B1)
+    recorrerFlor (cantF)
+    Informar('cantidad total de flores', cantF)
+  fin
+variables
+  A1: ra1
+  A2: ra2
+  B1: rb1
+  B2: rb2
+comenzar
+  AsignarArea(A1, areaA1)
+  AsignarArea(A2, areaA2)
+  AsignarArea(B1, areaB1)
+  AsignarArea(B2, areaB2)
+  
+  Iniciar(A1, 1,1)
+  Iniciar(A2, 11,1)
+  Iniciar(B1, 1,5)
+  Iniciar(B2, 11,5)
+fin

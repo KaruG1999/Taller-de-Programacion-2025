@@ -1,0 +1,115 @@
+{Turno B - tema 1.}
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,f1)
+    EnviarMensaje(2,f2)
+  fin
+  proceso recorrerAv (E id:numero; E ca: numero; ES cantf:numero)
+  comenzar
+    mientras (PosCa < (ca-1))
+      juntarF(cantf)
+      mover
+    juntarF(cantf)
+    BloquearEsquina(6,ca)
+    mover
+    EnviarMensaje(id, f)
+    juntarF(cantf)
+    mover 
+    LiberarEsquina(6,ca)
+    mientras (PosCa < 61)
+      juntarF (cantf)
+      mover 
+    juntarF (cantf)
+  fin
+  proceso juntarF (ES cantf:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:=cantf+1
+  fin
+  proceso asignaCa 
+  variables 
+    ca:numero
+  comenzar
+    Random(ca,2,50)
+    EnviarMensaje(ca,f1)
+    EnviarMensaje(ca,f2)
+  fin
+  proceso recorrerCa (E id:numero;E ca:numero; ES cantf:numero)
+  comenzar
+    Pos(1,ca)
+    derecha 
+    mientras (PosAv < 4)
+      juntarF(cantf)
+      mover
+    juntarF(cantf)   {queda en av 5}
+    BloquearEsquina(6,ca)
+    mover
+    EnviarMensaje(id, f)
+    juntarF(cantf)
+    mover 
+    LiberarEsquina(6,ca)
+    mientras (PosAv < 61)
+      juntarF(cantf)
+      mover
+    juntarF(cantf)
+  fin
+areas
+  area1: AreaPC (6,1,6,61)  {indico esquina pc por la interseccion con r2}
+  area2: AreaPC (1,2,61,50)
+  areaf: AreaP (100,100,100,100)
+robots
+  robot floreroAv
+  variables   
+    id,cantf, ca:numero
+  comenzar
+    cantf:=0
+    RecibirMensaje(id,f)
+    RecibirMensaje(ca,f)  
+    recorrerAv (id, ca, cantf)
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantf, f)
+  fin
+  robot floreroCa
+  variables 
+    id, ca:numero
+    cantf:numero
+  comenzar
+    cantf:=0
+    RecibirMensaje(id, f)
+    RecibirMensaje(ca,f)
+    recorrerCa (id, ca, cantf)
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantf, f)
+  fin
+  robot fiscal
+  variables 
+    id:numero
+    pri, cantf:numero
+  comenzar
+    asignaIds
+    asignaCa 
+    RecibirMensaje(id, *)
+    pri:=id
+    RecibirMensaje(id, *)
+    repetir 2
+      RecibirMensaje(id, *)
+      RecibirMensaje(cantf, *)
+      si (id=pri)
+        Informar('r que gano', pri)
+        Informar('cantf de ganador', cantf)
+  fin
+variables
+  f1: floreroAv
+  f2: floreroCa
+  f: fiscal
+comenzar
+  AsignarArea(f1, area1)
+  AsignarArea(f2, area2)
+  AsignarArea(f, areaf)
+  Iniciar(f, 100,100)
+  Iniciar(f1,6,1)
+  Iniciar(f2,1,2)
+fin

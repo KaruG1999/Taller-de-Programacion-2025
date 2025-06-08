@@ -1,0 +1,195 @@
+{3/6/2024 tema 2.
+2 robots carrera de ida(junt flores) y vuelta(junt pap). esq en comun (6,6)
+fisc informa quien junto mas flores (ida) / quien mas pap (vuelta) 
+}
+
+programa tema2
+procesos
+  proceso voltear
+  comenzar
+    repetir 2
+      derecha
+  fin
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+  fin
+  proceso actualizaMaxF (E cantf:numero;ES fmax:numero; E id:numero; ES ganadF:numero)
+  comenzar
+    si (cantf > fmax)
+      fmax:=cantf
+      ganadF:= id
+  fin
+  proceso actualizaMaxP (E cantp:numero;ES pmax:numero; E id:numero; ES ganadP:numero)
+  comenzar
+    si (cantp > pmax)
+      pmax:=cantp
+      ganadP:= id
+  fin
+  proceso juntarF (ES cantf:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:=cantf+1
+  fin
+  proceso juntarP (ES cantp:numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantp:=cantp+1
+  fin
+  proceso tramoR1F (ES cantf:numero) {robot 1}
+  comenzar
+    juntarF(cantf)
+    repetir 3
+      mover
+      juntarF(cantf)
+    BloquearEsquina(6,6)
+    Pos(6,6)
+    juntarF(cantf)
+    Pos(7,5)
+    LiberarEsquina(6,6)    
+    repetir 4
+      juntarF(cantf)
+      mover
+    juntarF(cantf)
+  fin
+  proceso tramoR1P (ES cantp:numero)
+  comenzar
+    juntarP(cantp)
+    repetir 3
+      mover 
+      juntarP(cantp)
+    BloquearEsquina(6,6)
+    Pos(6,6)
+    juntarP(cantp)
+    Pos(5,7)
+    LiberarEsquina(6,6)
+    repetir 4
+      juntarP(cantp)
+      mover
+    juntarP(cantp)
+  fin
+  proceso tramoR2F (ES cantf:numero)
+  comenzar
+    juntarF(cantf)
+    repetir 3
+      mover
+      juntarF(cantf)
+    BloquearEsquina(6,6)
+    Pos(6,6)
+    juntarF(cantf)
+    Pos(7,7)
+    LiberarEsquina(6,6)
+    repetir 4
+      juntarF(cantf)
+      mover
+    juntarF(cantf)
+  fin
+  proceso tramoR2P (ES cantp:numero) {todo se puede modularizar}
+  comenzar
+    juntarP(cantp)
+    repetir 3
+      mover 
+      juntarP(cantp)
+    BloquearEsquina(6,6)
+    Pos(6,6)
+    juntarP(cantp)
+    Pos(5,5)
+    LiberarEsquina(6,6)
+    repetir 4
+      juntarP(cantp)
+      mover
+    juntarP(cantp)
+  fin
+areas
+  area1A: AreaP (1,7,6,7)
+  area1B: AreaP (7,5,11,5)
+  area2A: AreaP (1,5,6,5)
+  area2B: AreaP (7,7,11,7)
+  areac: AreaPC (6,6,6,6)
+  areaf: AreaP (1,6,1,6)
+robots
+  robot corredor1
+  variables 
+    id:numero
+    cantf,cantp:numero
+  comenzar
+    cantf:=0
+    cantp:=0
+    derecha
+    RecibirMensaje(id,f)
+    tramoR1F (cantf)
+    EnviarMensaje(id, f)   {termina y avisa quien es y cant que junto}
+    EnviarMensaje(cantf, f)
+    voltear
+    tramoR1P (cantp)
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantp, f)
+  fin
+  robot corredor2
+  variables 
+    id:numero
+    cantf,cantp:numero
+  comenzar
+    cantf:=0
+    cantp:=0
+    derecha
+    RecibirMensaje(id,f)
+    tramoR2F (cantf)
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantf, f)
+    voltear
+    tramoR2P (cantp)
+    EnviarMensaje(id, f)
+    EnviarMensaje(cantp, f)
+  fin
+  robot fiscal
+  variables 
+    id,cantr1,cantr2:numero
+    cantf, fmax,cantp, pmax,ganadF,ganadP:numero
+  comenzar
+    asignaIds
+    fmax:=-1
+    pmax:=-1
+    cantr1:=0
+    cantr2:=0
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id=1)
+        si (cantr1=0)  {primeros ingresos reciben cantf, si es segundo cantp}
+          RecibirMensaje(cantf, r1)
+          {o actualizo aca dentro?}
+          cantr1:=1
+        sino
+          RecibirMensaje(cantp, r1) 
+      sino 
+        si (cantr2=0)
+          RecibirMensaje(cantf,r2) 
+          cantr2:=1
+        sino
+          RecibirMensaje(cantp,r2)
+      {o actualizo robot max f aca y evaluo?}
+      actualizaMaxF (cantf, fmax, id, ganadF)  {almacena id max flores} 
+      si (cantr1=1)&(cantr2=1)    {si ambos entregaron cantF informa }
+        Informar('r max Flores', ganadF)
+      actualizaMaxP (cantp, pmax, id, ganadP) {idem id max pap}
+    Informar('r max papeles', ganadP)
+  fin
+variables
+  r1: corredor1
+  r2: corredor2
+  f:fiscal
+comenzar
+  AsignarArea(r1, area1A)
+  AsignarArea(r1, area1B)
+  AsignarArea(r1, areac)
+  AsignarArea(r2, area2A)
+  AsignarArea(r2, area2B)
+  AsignarArea(r2, areac)
+  AsignarArea(f, areaf)
+  Iniciar(f, 1,6)
+  Iniciar(r1,1,7)
+  Iniciar(r2,1,5)
+fin

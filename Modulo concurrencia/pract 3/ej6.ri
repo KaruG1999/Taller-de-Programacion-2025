@@ -1,0 +1,220 @@
+{.}
+
+programa ej6
+procesos
+  proceso voltea
+  comenzar
+    repetir 2
+      derecha
+  fin
+  proceso juntarF (ES cantF:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:=cantF+1
+  fin
+  proceso juntarP (ES cantP:numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:=cantP+1
+  fin
+  proceso juntarfyp (ES cantF:numero; ES cantP:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:=cantF+1
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:=cantP+1
+  fin
+areas
+  area: AreaPC (2,2,16,16)
+  areafisc: AreaP (1,1,1,1) {no menciona pos}
+  areac: AreaC (1,20,100,22) {area compartida para todos}
+robots
+  robot recf
+  variables 
+    cantF, ca:numero
+  comenzar
+    cantF:=0
+    repetir 5
+      juntarF(cantF)
+      mover
+    derecha
+    juntarF(cantF)
+    repetir 2
+      mover
+      juntarF(cantF)
+    BloquearEsquina(5,8)
+    mover
+    juntarF(cantF)
+    mover
+    LiberarEsquina(5,8)
+    repetir 2
+      juntarF(cantF)
+      mover 
+    derecha
+    juntarF(cantF)
+    repetir 2
+      mover 
+      juntarF(cantF)
+    BloquearEsquina(8,5)
+    mover
+    juntarF(cantF)
+    mover
+    LiberarEsquina(8,5)
+    repetir 2
+      juntarF(cantF)
+      mover
+    derecha
+    repetir 5
+      juntarF(cantF)
+      mover 
+    EnviarMensaje(1, f) {avisa que termino al fiscal}
+    RecibirMensaje(ca, f) {recibe calle a recorrer}
+    voltea {mira hacia el otro lado}
+    Pos(1,ca)
+    mientras (cantF <> 0) & (PosAv < 100)
+      depositaFlor   {deposita flores juntadas cuando sale no hay mas flores y corta}
+      cantF:=cantF-1
+      mover
+  fin
+  robot recfyp
+  variables
+    cantP, cantF, ca:numero
+  comenzar
+    cantF:=0
+    cantP:=0
+    repetir 2
+      juntarfyp(cantF, cantP)
+      mover
+    BloquearEsquina(5,8)   {o (5,7)}
+    mover
+    juntarfyp(cantF, cantP)
+    mover
+    LiberarEsquina(5,8)
+    repetir 5
+      juntarfyp(cantF, cantP)
+      mover 
+    derecha
+    repetir 3
+      juntarfyp(cantF, cantP)
+      mover
+    BloquearEsquina(9,15)
+    mover 
+    juntarfyp(cantF, cantP)
+    mover
+    LiberarEsquina(9,15)
+    repetir 5
+      juntarfyp(cantF, cantP)
+      mover
+    derecha
+    repetir 5
+      juntarfyp(cantF, cantP)
+      mover 
+    juntarfyp(cantF, cantP)
+    BloquearEsquina(15,9)
+    mover 
+    juntarfyp(cantF, cantP)
+    mover
+    LiberarEsquina(15,9)
+    repetir 3
+      juntarfyp(cantF, cantP)
+      mover
+    derecha
+    repetir 6
+      juntarfyp(cantF, cantP)
+      mover
+    juntarfyp(cantF, cantP)
+    BloquearEsquina(8,5)
+    mover
+    juntarfyp(cantF, cantP)
+    mover
+    LiberarEsquina(8,5)
+    repetir 2
+      juntarfyp(cantF, cantP)
+      mover
+    EnviarMensaje(2, f) {envia termino a fisc}
+    RecibirMensaje(ca, f)
+    voltea
+    Pos(1,ca)
+    mientras (cantF <>0) & (cantP <>0) & (PosAv<100)
+      depositarFlor
+      cantF:= cantF-1
+      depositarPapel
+      cantP:=cantP-1
+      mover
+  fin  
+  robot recp
+  variables 
+    cantP, ca:numero
+  comenzar
+    cantP:=0
+    repetir 5
+      juntarP(cantP)
+      mover
+    BloquearEsquina(9,15)
+    mover
+    juntarP(cantP)
+    mover
+    LiberarEsquina(9,15)
+    derecha
+    repetir 2
+      repetir 6
+        juntarP(cantP)
+        mover
+      derecha
+    juntarP(cantP)
+    BloquearEsquina(15,9)
+    mover
+    juntarP(cantP)
+    mover
+    LiberarEsquina(15,9)
+    repetir 5
+      juntarP(cantP)
+      mover
+    EnviarMensaje(3, f)
+    RecibirMensaje(ca, f)
+    voltear
+    Pos(1,ca)
+    mientras (cantP<>0) & (PosAv<100)
+      depositarPapel
+      cantP:=cantP-1
+      mover
+  fin
+  robot fiscalizador
+  variables 
+    id,ca:numero
+  comenzar
+    ca:=20
+    repetir 3
+      RecibirMensaje(id, *)
+      si (id=1)
+        EnviarMensaje(ca, r1)
+      sino
+        si (id=2)
+          EnviarMensaje(ca, r2)
+        sino
+          EnviarMensaje(ca,r3)
+      ca:= ca+1
+  fin
+variables
+  r1: recf
+  r2: recfyp
+  r3: recp
+  f: fiscalizador
+comenzar
+  AsignarArea(r1, area)
+  AsignarArea(r1, areac)
+  AsignarArea(r2, area)
+  AsignarArea(r2, areac)
+  AsignarArea(r3, area)
+  AsignarArea(r3, areac)
+  AsignarArea(f, areafisc)
+  
+  Iniciar(f, 1,1)
+  Iniciar(r1,2,2)
+  Iniciar(r2,5,5)
+  Iniciar(r3,9,9)
+fin

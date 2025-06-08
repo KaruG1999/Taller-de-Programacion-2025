@@ -1,0 +1,103 @@
+{3/6/2024 tema 1.}
+
+programa tema1
+procesos
+  proceso esconderF   {no debe bloquear esquina ya que avisa cuando termina}
+  variables 
+    av,ca,avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    Random(av,10,13)
+    Random(ca,10,13)
+    {BloquearEsquina(av,ca)}
+    Pos(av,ca)
+    depositarFlor
+    Pos(avIni,caIni)
+    {LiberarEsquina(av,ca)}
+  fin
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso siguenBuscando
+  comenzar
+    EnviarMensaje(F,r1)
+    EnviarMensaje(F,r2)
+    EnviarMensaje(F,r3)
+  fin
+  proceso finalizar
+  comenzar
+    EnviarMensaje(V,r1)
+    EnviarMensaje(V,r2)
+    EnviarMensaje(V,r3)
+  fin
+areas
+  areab: AreaC (10,10,13,13)
+  area1: AreaP (1,1,1,1)
+  area2: AreaP (2,2,2,2)
+  area3: AreaP (3,3,3,3)
+  area4: AreaP (4,4,4,4)
+robots
+  robot buscador
+  variables 
+    terminar:boolean
+    id:numero
+    av,ca,avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    terminar:=F
+    RecibirMensaje(id,r4) {una vez que recibe id comienzan}
+    mientras (terminar <> V)
+      RecibirMensaje(terminar, r4)
+      si (terminar = F)
+        Random(av,10,13)
+        Random(ca,10,13)
+        BloquearEsquina(av,ca)
+        Pos(av,ca)
+        si (HayFlorEnLaEsquina)
+          tomarFlor
+          EnviarMensaje(id, r4)  {si encontro avisa que es el ganador}
+        sino
+          Pos(avIni,caIni)
+          LiberarEsquina(av,ca)
+          EnviarMensaje(0, r4)  {sino avisa que no encontro nada }
+  fin
+  robot escondedor
+  variables 
+    aux, ganador:numero
+  comenzar
+    esconderF  {primero esconde flor}
+    asignaIds {identifica buscadores}
+    siguenBuscando
+    RecibirMensaje(aux, *)
+    mientras (aux = 0)
+      siguenBuscando    {envia falsos si sigue }
+      RecibirMensaje(aux, *)  {recibe id o 0 si sigue}
+    {cuando sale del mientras es porque recibio un id}
+    ganador:=aux  {guardo id de ganador(no es necesario)}
+    finalizar  {envia V a todos para que terminen}
+    Informar('ganador', ganador)  
+  fin
+variables
+  r1: buscador
+  r2: buscador
+  r3: buscador
+  r4: escondedor
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, areab)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, areab)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, areab)
+  AsignarArea(r4, area4)
+  AsignarArea(r4, areab)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 2,2)
+  Iniciar(r3, 3,3)
+  Iniciar(r4, 4,4)
+fin

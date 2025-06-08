@@ -1,0 +1,163 @@
+{}
+programa ej4
+procesos
+  proceso acciona (ES cant: numero)
+  variables 
+    avIni, caIni:numero {guardo pos act}
+    av,ca:numero
+  comenzar
+    avIni:= PosAv
+    caIni:= PosCa
+    Random(av,25,75)
+    Random(ca,25,75)
+    Pos(av,ca)
+    limpiarEsq( cant)
+    Pos(avIni, caIni)
+  fin
+  proceso limpiarEsq (ES cant:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cant:= cant+1
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cant:= cant+1
+  fin
+  proceso inicializar (ES c1:numero; ES c2:numero; ES c3:numero; ES c4:numero)
+  comenzar
+    c1:=0
+    c2:=0
+    c3:=0
+    c4:=0
+  fin
+  proceso finaliza 
+  comenzar
+    EnviarMensaje(F, r1)
+    EnviarMensaje(F, r2)
+    EnviarMensaje(F, r3)
+    EnviarMensaje(F, r4)
+  fin
+  proceso calculaMax (ES rmax:numero;E c1:numero;E c2:numero;E c3:numero;E c4:numero)
+  variables 
+    cantMax:numero
+  comenzar
+    cantMax:=-1      {al ser contadores deben analizarse uno por uno}
+    si (c1>cantMax)
+      cantMax:= c1
+      rmax:=1
+    si (c2>cantMax)
+      cantMax:= c2
+      rmax:=2
+    si (c3>cantMax)
+      cantMax:= c3
+      rmax:=3
+    si (c4>cantMax)
+      cantMax:= c4
+      rmax:=4
+  fin
+  proceso avisaGanador (E max:numero)
+  variables 
+    id:numero
+    ok:boolean
+  comenzar
+    id:=1
+    repetir 4
+      si (id = max)
+        ok:=V
+      sino
+        ok:=F
+      avisaRobot(id,ok)
+      id:=id+1
+  fin
+  proceso avisaRobot (E id:numero; E ok:boolean)
+  comenzar
+    si (id=1)
+      EnviarMensaje(ok, r1)
+    sino
+      si (id=2)
+        EnviarMensaje(ok,r2)
+      sino
+        si (id=3)
+          EnviarMensaje(ok,r3)
+        sino
+          EnviarMensaje(ok,r4)
+  fin
+areas
+  area: AreaPC (25,25,75,75)
+  areaf: AreaP (1,1,1,1)
+  area1: AreaP (25,1,25,1)
+  area2: AreaP (30,1,30,1)
+  area3: AreaP (35,1,35,1)
+  area4: AreaP (40,1,40,1)
+robots
+  robot recolector
+  variables 
+    av,ca: numero
+    ok, gane: boolean
+    cant: numero
+  comenzar
+    RecibirMensaje(ok, f)
+    mientras (ok) {mientras ok sea true}
+      RecibirMensaje(cant, f) {recibo cant act de fiscal}
+      acciona (cant)
+      EnviarMensaje (cant, f) {envia cant juntada}
+      RecibirMensaje (ok, f) {espera el proximo ok del fiscal}
+    RecibirMensaje(gane, f) {recibo resultado VoF}
+    si (gane)
+      Pos(50,50)
+  fin
+  robot fiscal
+  variables 
+    rmax:numero
+    id:numero
+    c1,c2,c3,c4:numero
+  comenzar
+    inicializar(c1,c2,c3,c4)
+    repetir 10
+      Random(id,1,4)
+      si (id=1)
+        EnviarMensaje(V, r1) 
+        EnviarMensaje(c1, r1)  {envío cant act y recibo cant actualizada}
+        RecibirMensaje(c1, r1)
+      sino
+        si (id=2)
+          EnviarMensaje(V, r2) 
+          EnviarMensaje(c2, r2)  {envío cant act y recibo cant actualizada}
+          RecibirMensaje(c2, r2)
+        sino
+          si (id=3)
+            EnviarMensaje(V, r3) 
+            EnviarMensaje(c3, r3)  {envío cant act y recibo cant actualizada}
+            RecibirMensaje(c3, r3)
+          sino
+            si (id=4)
+              EnviarMensaje(V, r4) 
+              EnviarMensaje(c4, r4)  {envío cant act y recibo cant actualizada}
+              RecibirMensaje(c4, r4)
+    finaliza {pone en falso todos los robots}
+    calculaMax (rmax, c1,c2,c3,c4)  {calcula robotMax}
+    avisaGanador (rmax)
+    Informar ('Ganador', rmax)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector
+  r4: recolector
+  f: fiscal
+comenzar
+  AsignarArea(r1, area)
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area)
+  AsignarArea(r2, area2)
+  AsignarArea(r3, area)
+  AsignarArea(r3, area3)
+  AsignarArea(r4, area)
+  AsignarArea(r4, area4)
+  AsignarArea(f, areaf)
+  Iniciar(f,1,1)
+  Iniciar(r1,25,1)
+  Iniciar(r2,30,1)
+  Iniciar(r3,35,1)
+  Iniciar(r4,40,1)
+fin

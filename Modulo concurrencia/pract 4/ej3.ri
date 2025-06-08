@@ -1,0 +1,91 @@
+{Sincroniación barrera }
+
+programa ej3A
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso juntarPap 
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso recorrerAvenida
+  variables
+    id:numero
+    ok:boolean
+  comenzar
+    RecibirMensaje(id, c)  {recibe su id del coordinador}
+    repetir 4 {arranca en esqu actual y solo avanza 4 esq}
+      juntarPap
+      mover
+    juntarPap     
+    si(id=1)
+      EnviarMensaje(V,r2)
+      EnviarMensaje(V,r3)
+      RecibirMensaje(ok, r2)
+      RecibirMensaje(ok, r3)  {hasta que no recibe ambos no arranca}
+    sino 
+      si(id=2)
+        EnviarMensaje(V,r1)
+        EnviarMensaje(V,r3)
+        RecibirMensaje(ok, r1)
+        RecibirMensaje(ok, r3) 
+      sino
+        EnviarMensaje(V,r1)
+        EnviarMensaje(V,r2)
+        RecibirMensaje(ok, r1)
+        RecibirMensaje(ok, r2) 
+    repetir 19     {19x5 = 95 esquinas + 5 esq anteriores}
+      repetir 5 {avanza 5 esquinas}
+        mover
+        juntarPap
+      si(id=1)
+        EnviarMensaje(V,r2)
+        EnviarMensaje(V,r3)
+        RecibirMensaje(ok, r2)
+        RecibirMensaje(ok, r3)  {hasta que no recibe ambos no arranca}
+      sino 
+        si(id=2)
+          EnviarMensaje(V,r1)
+          EnviarMensaje(V,r3)
+          RecibirMensaje(ok, r1)
+          RecibirMensaje(ok, r3) 
+        sino
+          EnviarMensaje(V,r1)
+          EnviarMensaje(V,r2)
+          RecibirMensaje(ok, r1)
+          RecibirMensaje(ok, r2) 
+  fin
+areas
+  area1: AreaP (1,1,1,100)
+  area2: AreaP (2,1,2,100)
+  area3: AreaP (3,1,3,100)
+  areac: AreaP (4,1,4,1)
+robots
+  robot robot1
+  comenzar
+    recorrerAvenida
+  fin
+  robot coordinador
+  comenzar
+    asignaIds
+  fin
+variables
+  r1: robot1
+  r2: robot1
+  r3: robot1
+  c: coordinador
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area2)
+  AsignarArea(r3, area3)
+  AsignarArea(c, areac)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 2,1)
+  Iniciar(r3, 3,1)
+  Iniciar(c, 4,1)
+fin

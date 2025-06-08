@@ -1,0 +1,79 @@
+{}
+programa ej2
+procesos
+  proceso izquierda 
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso juntarFyP (ES cantF:numero; ES cantP:numero)
+  comenzar
+    si (HayFlorEnLaEsquina)
+      mientras (HayFlorEnLaEsquina)
+        tomarFlor
+        cantF:= cantF+1
+    si (HayPapelEnLaEsquina)
+      mientras (HayPapelEnLaEsquina)
+        tomarPapel
+        cantP:= cantP+1
+  fin
+  proceso escalon (E alt: numero; ES cantEsc:numero)
+  variables 
+    cantF,cantP:numero
+  comenzar
+    cantF:=0
+    cantP:=0
+    repetir alt
+      juntarFyP(cantF, cantP)
+      si (cantF > cantP)
+        cantEsc:= cantEsc + 1
+      mover
+    juntarFyP(cantF, cantP)  {ultima esquina}
+    si (cantF > cantP)
+      cantEsc:= cantEsc + 1
+    derecha
+    mover  {ancho 1}
+    izquierda 
+  fin
+areas
+  areaj: AreaP (1,1,1,1)
+  area1: AreaP (2,1,6,20)  {alto max = 4x5 = 20}
+  area2: AreaP (7,1,11,20)
+  area3: AreaP (12,1,16,20)
+robots
+  robot robot1
+  variables
+    alt:numero
+    cantEsc:numero
+  comenzar
+    cantEsc:=0
+    repetir 4
+      Random(alt,1,5)
+      escalon (alt, cantEsc)  
+    EnviarMensaje(cantEsc, j)
+  fin
+  robot jefe
+  variables
+    tot, cantEsc:numero
+  comenzar
+    tot:=0
+    repetir 3
+      RecibirMensaje (cantEsc, *)
+      tot:=tot + cantEsc
+    Informar ('Total', tot)
+  fin
+variables
+  r1: robot1
+  r2: robot1
+  r3: robot1
+  j: jefe
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r2, area2)
+  AsignarArea(r3, area3)
+  AsignarArea(j, areaj)
+  Iniciar(j, 1,1)
+  Iniciar(r1,2,1)
+  Iniciar(r2,7,1)
+  Iniciar(r3,12,1)
+fin

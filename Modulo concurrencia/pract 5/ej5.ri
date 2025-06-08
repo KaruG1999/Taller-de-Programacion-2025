@@ -1,0 +1,90 @@
+{Servidor/Cliente.}
+
+programa ej5
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso depositarP (E cant:numero) {servidor}
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    BloquearEsquina(100,1)
+    Pos(100,1)
+    repetir cant
+      depositarPapel
+    Pos(avIni,caIni)
+    LiberarEsquina(100,1)
+  fin
+  proceso juntaP (E cantP:numero)
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    repetir cantP   {junta de a 1 papel}
+      BloquearEsquina(100,1)
+      Pos(100,1)
+      tomarPapel
+      Pos(avIni,caIni)
+      LiberarEsquina(100,1)
+  fin
+areas
+  area1: AreaP (10,1,10,1)
+  area2: AreaP (11,1,11,1)
+  area3: AreaP (12,1,12,1)
+  areaS: AreaP (13,1,13,1)
+  fuente: AreaC (100,1,100,1)
+robots
+  robot cliente
+  variables 
+    id, cantP: numero
+  comenzar
+    RecibirMensaje(id, s)
+    repetir 5
+      EnviarMensaje(id, s)
+      RecibirMensaje(cantP, s)
+      juntaP(cantP)
+  fin
+  robot servidor
+  variables 
+    id,cant:numero
+  comenzar
+    asignaIds
+    repetir 15
+      RecibirMensaje(id,*) {recibe id para dar ok}
+      Random(cant,1,5)
+      depositarP (cant)
+      si (id = 1)
+        EnviarMensaje(cant,r1) {envia cant pap}
+      sino
+        si (id=2)
+          EnviarMensaje(cant,r2)
+        sino
+          EnviarMensaje(cant,r3)
+    {termina}  
+  fin
+variables
+  r1: cliente
+  r2: cliente
+  r3: cliente
+  s: servidor
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuente)
+  AsignarArea(s, areaS)
+  AsignarArea(s, fuente)
+  Iniciar(r1, 10,1)
+  Iniciar(r2, 11,1)
+  Iniciar(r3, 12,1)
+  Iniciar(s, 13,1)
+fin

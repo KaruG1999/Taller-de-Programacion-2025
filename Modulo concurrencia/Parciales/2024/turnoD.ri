@@ -1,0 +1,152 @@
+{Turno D .}
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1, RP1)  
+    EnviarMensaje(2, RP2)
+    EnviarMensaje(3, RF)
+  fin
+  proceso enviaAv
+  variables 
+    av:numero
+  comenzar
+    Random(av,2,35)
+    EnviarMensaje(av, RF)
+    EnviarMensaje(av, RP1)  {tiene que avisar a todos por las intersecciones}
+    EnviarMensaje(av, RP2)
+  fin
+  proceso depositarP (ES cantp:numero)
+  comenzar
+    si (~HayPapelEnLaEsquina)
+      depositarPapel
+      cantp:=cantp+1
+  fin
+  proceso recorrerCalle(E av:numero; ES cantp:numero)
+  comenzar
+    mientras (PosAv < (av-1))
+      depositarP (cantp)
+      mover
+    depositarP (cantp)
+    BloquearEsquina(av,PosCa)
+    mover
+    depositarP(cantp)
+    mover
+    LiberarEsquina(av,PosCa)
+    mientras (PosAv < 100)
+      depositarP (cantp)
+      mover
+    depositarP (cantp)
+  fin
+  proceso depositarF (ES cantf:numero)
+  comenzar
+    si (~HayFlorEnLaEsquina)
+      depositarFlor
+      cantf:=cantf+1
+  fin
+  proceso recorrerAv(E av:numero; ES cantf:numero)
+  comenzar
+    mientras (PosCa < 7)
+      depositarF (cantf)
+      mover
+    depositarF (cantf)
+    BloquearEsquina(av,8)  {calle de RP1}
+    mover
+    depositarF(cantf)
+    mover
+    LiberarEsquina(av,8)
+    mientras (PosCa < 14)
+      depositarF(cantf)
+      mover
+    depositarF(cantf)
+    BloquearEsquina(av,15)
+    mover
+    depositarF(cantf)
+    mover
+    LiberarEsquina(av,15)
+    mientras (PosCa < 100)
+      depositarF(cantf)
+      mover
+    depositarF(cantf)
+  fin
+areas
+  areaf: AreaP (1,1,1,1)
+  areaRP1: AreaP (36,8,100,8) {area no compartida}
+  areaRP2: AreaP (36,15,100,15)
+  areaRFa: AreaP (2,1,35,7)
+  areaRFb: AreaP (2,16,35,100)
+  areaC: AreaPC (1,8,35,15) {area en donde puden tener interaccion}
+  areaFini: AreaP (1,2,1,2) {area inicial de RF antes de elegir av}
+robots
+  robot papelero
+  variables
+    id, av, ganador:numero
+    cantp:numero {cant de papeles que deposita}
+    avIni,caIni:numero
+    ok:boolean
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    RecibirMensaje(id, f)
+    RecibirMensaje(av, f)
+    derecha
+    recorrerCalle(av,cantp)
+    EnviarMensaje(id, f)
+    RecibirMensaje(ganador,f)
+    si (id = ganador)
+      Pos(avIni,caIni)
+      Informar('cant papeles depositados',cantp)
+  fin
+  robot florero
+  variables
+    id, av, ganador:numero
+    cantf:numero {cant de flores que deposita}
+    avIni,caIni:numero
+    ok:boolean
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    RecibirMensaje(id, f)
+    RecibirMensaje(av, f)
+    Pos(av,1)
+    recorrerAv(av,cantf)
+    EnviarMensaje(id, f)
+    RecibirMensaje(ganador,f)
+    si (id = ganador)
+      Pos(avIni,caIni)
+      Informar('cant flores depositadas',cantf)
+  fin
+  robot fiscal
+  variables
+    id,ganador:numero
+  comenzar
+    asignaIds
+    enviaAv
+    RecibirMensaje(id, *)   {primero que llega es ganador}
+    ganador:=id
+    repetir 2
+      RecibirMensaje(id, *)
+    EnviarMensaje(ganador, RP1)   {le envia el id del ganador a todos los robots}
+    EnviarMensaje(ganador, RP2)
+    EnviarMensaje(ganador, RF) 
+  fin
+variables
+  RP1: papelero
+  RP2: papelero
+  RF: florero
+  f: fiscal
+comenzar
+  AsignarArea(RP1, areaRP1)
+  AsignarArea(RP1, areaC)
+  AsignarArea(RP2, areaRP2)
+  AsignarArea(RP2, areaC)
+  AsignarArea(RF, areaRFa)
+  AsignarArea(RF, areaRFb)
+  AsignarArea(RF, areaFini)
+  AsignarArea(RF, areaC)
+  AsignarArea(f, areaf)
+  Iniciar(f, 1,1)
+  Iniciar(RP1,1,8)
+  Iniciar(RP2,1,15)
+  Iniciar(RF, 1,2)
+fin
