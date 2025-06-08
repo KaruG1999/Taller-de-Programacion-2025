@@ -1,40 +1,33 @@
-👨🏻‍💻
-Este repositorio contiene las prácticas y ejercicios que realicé durante la cursada de la materia Taller de Programación, de la carrera de Licenciatura en Sistemas en la Universidad Nacional de La Plata.
+# 👨🏻‍💻 Taller de Programación – UNLP
 
-🌈 Sobre la materia
-La materia se divide en tres grandes bloques: Programación Estructurada, Programación Orientada a Objetos y Programación Concurrente. A continuación, dejo un resumen de los temas que fui trabajando en cada etapa.
+Este repositorio contiene prácticas y ejercicios realizados durante la cursada de la materia **Taller de Programación**, de la carrera **Licenciatura en Sistemas** (UNLP).
 
-A. Programación Estructurada:
+## 📚 Apuntes
 
-En esta primera parte, trabajé principalmente con:
+En la rama principal se encuentran dos archivos PDF con apuntes personales:
 
-  _ Estructuras de datos no lineales, especialmente árboles, su definición, características y operaciones básicas.
+- [📄 Taller de Programación.pdf](./Taller%20de%20programacion.pdf): resumen de contenidos y conceptos trabajados en la cursada actual.
+- [📄 Final CADP.pdf](./Final%20CADP.pdf): material de la materia previa (**Algoritmos y Estructuras de Datos – CADP**), que abarca temas fundamentales como análisis y modelado de problemas, estructuras de datos y paradigmas imperativos.
 
-  _ Algoritmos clásicos como búsquedas y ordenamientos, aplicados sobre estructuras de datos estáticas y dinámicas.
+## 🧩 Contenidos trabajados
 
-  _ Utilicé Pascal, siguiendo un enfoque imperativo.
+La materia se organiza en tres bloques principales:
 
-B. Programación Orientada a Objetos:
+### A. Programación Estructurada
+- Algoritmos clásicos (búsqueda, ordenamiento)
+- Estructuras de datos no lineales (como árboles)
+- Programación imperativa en Pascal
 
-En la segunda parte, me introduje en los fundamentos de la POO, abordando:
+### B. Programación Orientada a Objetos
+- Clases, objetos, estados y comportamientos
+- Herencia y reutilización de código
+- Implementación en Java
 
-  _ Los conceptos de clase, objeto, instancia, estado, comportamiento y constructores.
+### C. Programación Concurrente
+- Concurrencia y paralelismo
+- Comunicación y sincronización entre procesos
+- Desarrollo en entorno multirobot (r-info)
 
-  _ La noción de herencia para la reutilización y extensión del código.
+## ⚠️ Nota
 
-  _ Implementé programas en Java aplicando estos conceptos.
-
-C. Programación Concurrente:
-
-En la última parte de la materia, trabajé con:
-
-  _ Conceptos básicos de concurrencia y paralelismo, entendiendo cómo se comportan múltiples procesos ejecutándose en simultáneo.
-
-  _ Comunicación y sincronización entre procesos, para evitar conflictos o interferencias.
-
-  _ El desarrollo de programas concurrentes lo realicé en el entorno multirobot (r-info), donde varios robots interactúan en paralelo en un entorno compartido.
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------  
-
-Aclaración 💖
-Todo el código subido en este repositorio fue hecho por mí, como estudiante, con fines académicos. No debe tomarse como una solución definitiva ni como referencia absoluta, ya que no tengo formación docente ni autoridad para garantizar su validez.
+Todo el material fue realizado con fines académicos. El código y los apuntes representan mi propio proceso de aprendizaje y **no deben tomarse como soluciones oficiales**.
