@@ -99,7 +99,13 @@ robots
     asignaDim
     repetir 3
       RecibirMensaje(id,*)
-      RecibirMensaje(cantp, *)
+      si (id=1)
+        RecibirMensaje(cantp, r1)
+      sino
+        si (id=2)
+          RecibirMensaje(cantp,r2)
+        sino 
+          RecibirMensaje(cantp,r3)
       actualizaMax(cantp, cantpMax, id, idMax)
     Informar('r junto mas pap', idMax)
   fin

@@ -1,12 +1,11 @@
 {Cliente / servidor.
 Servidor: 
 - sirve a 3 clientes entre 1 y 4 flores en la esquina siguiente a la que el cl esta posicionado.
-- El servidor asigna ids a clientes para identificarlos 
+- El servidor asigna ids a clientes para identificarlos.9
 Cliente: 
 - Solicita cant random de flores a servidor y una vez que las deja en la siguiente esquina, las junta y las deposita una a una en avenida. 
 - termina cuando completan su avenida.
 }
-
 programa ej1
 procesos
   proceso asignaIds 
@@ -17,15 +16,15 @@ procesos
   fin
   proceso avanza
   comenzar
-    mientras ((HayFlorEnLaBolsa) & (PosCa<100))
+    mientras ((HayFlorEnLaBolsa) & (PosCa<100))     
       depositarFlor
       mover 
-    si (HayFlorEnLaBolsa) & (PosCa=100)
+    si (HayFlorEnLaBolsa) & (PosCa=100)      {ultima esquina}
       depositarFlor
   fin
 areas
-  areaS: AreaP (100,100,100,100)
-  area1: AreaPC (1,1,1,100)
+  areaS: AreaP (100,100,100,100)    {ini robot servidor}
+  area1: AreaPC (1,1,1,100)         {PC: clientes comparten con servidor su area }
   area2: AreaPC (2,1,2,100)
   area3: AreaPC (3,1,3,100)
 robots
@@ -35,20 +34,20 @@ robots
     ack:boolean
     av,ca:numero
   comenzar
-    RecibirMensaje(id, s)      {identificador}
-    mientras (PosCa < 100)
+    RecibirMensaje(id, s)        {identificador cliente}
+    mientras (PosCa < 100)       {mientras no termina su avenida}
       Random(cantF, 1,4)
       EnviarMensaje(id, s)
       EnviarMensaje(cantF, s)
-      av:= PosAv               {!importante: usar av y ca}
+      av:= PosAv                 { ! importante: usar var av y ca}
       ca:= PosCa+1
       EnviarMensaje(av, s)
       EnviarMensaje(ca, s)
-      RecibirMensaje(ack, s)   {recibe el ok}
+      RecibirMensaje(ack, s)     {recibe el ok}  
       Pos(av, ca)
-      mientras (HayFlorEnLaEsquina)
+      repetir cantF              {junta flores pedidas al servidor en ca siguiente}
         tomarFlor
-      Pos(av,ca-1)
+      Pos(av,ca-1)               {retrocede y avanza depositando}
       avanza
     EnviarMensaje(id, s)
     EnviarMensaje(0, s) {si termina envia 0 al servidor } 
@@ -60,13 +59,13 @@ robots
     av,ca:numero
     ok:numero
   comenzar
-    asignaIds
+    asignaIds       {identifica a los clientes}
     ok:= 0  
     mientras (ok <> 3)  {mientras los 3 no hayan terminado}
       RecibirMensaje(id, *)
       si(id=1)
-        RecibirMensaje(nF, r1)
-        si (nF <> 0)   
+        RecibirMensaje(nF, r1)      
+        si (nF <> 0)           {recibe cant entre 1 y 4}
           RecibirMensaje(av, r1)
           RecibirMensaje(ca, r1)
           Pos(av,ca)
@@ -74,7 +73,7 @@ robots
             depositarFlor
           Pos(100,100) 
           EnviarMensaje(V, r1)
-        sino
+        sino                   
           ok:=ok+1 {cuando recibe 0 suma 1 al contador de finalizados}
       sino 
         si (id=2)

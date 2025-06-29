@@ -46,7 +46,7 @@ robots
     id, cantP: numero
   comenzar
     RecibirMensaje(id, s)
-    repetir 5
+    repetir 4
       EnviarMensaje(id, s)
       RecibirMensaje(cantP, s)
       juntaP(cantP)
@@ -56,7 +56,7 @@ robots
     id,cant:numero
   comenzar
     asignaIds
-    repetir 15
+    repetir 12
       RecibirMensaje(id,*) {recibe id para dar ok}
       Random(cant,1,5)
       depositarP (cant)

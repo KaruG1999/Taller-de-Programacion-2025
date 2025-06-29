@@ -1,0 +1,126 @@
+{ 9/06/2025 - tema 1 - turno tarde }
+{recolector: junta objeto de la fuente y lo deposita en base
+depositador: toma objeto de la base y lo deposita en la esq de la calle hasta completar el recorrido.
+fiscal: se encarga de informar equipo ganador }
+programa parcial
+areas
+  base: AreaPC (12,11,12,11)
+  areaA1: AreaP (10,12,11,12)
+  areaA2: AreaP (12,12,20,12)
+  areaV1: AreaP (10,10,11,10)
+  areaV2: AreaP (12,10,20,10)
+  areaf: AreaP (20,11,20,11)
+robots
+  robot recolectorF
+  variables   
+    avIni,caIni:numero
+  comenzar
+    derecha
+    avIni:= PosAv
+    caIni:= PosCa
+    repetir 8           {desde av 13,20 son 8 esq}
+      Pos(PosAv-1, PosCa)
+      tomarFlor
+      BloquearEsquina(12,11)
+      Pos(12,11)
+      depositarFlor
+      Pos(avIni,caIni)
+      LiberarEsquina(12,11)
+      {avisar a depositador}
+      EnviarMensaje(V, a2)
+    EnviarMensaje(F,a2)
+  fin
+  robot depositadorF
+  variables 
+    av,ca:numero
+    seguir:boolean
+  comenzar
+    derecha
+    RecibirMensaje(seguir, a1)  {recibe ok del recolector}
+    mientras (seguir = V) 
+      av:=PosAv+1   {avanza}
+      ca:=PosCa
+      BloquearEsquina(12,11)
+      Pos(12,11)
+      tomarFlor
+      Pos(av,ca)    
+      LiberarEsquina(12,11)
+      depositarFlor
+      RecibirMensaje(seguir, a1)
+      
+    EnviarMensaje(ca, f)
+  fin
+  robot recolectorP
+  variables   
+    avIni,caIni:numero
+  comenzar
+    derecha
+    avIni:= PosAv
+    caIni:= PosCa
+    repetir 8           {desde av 13,20 son 8 esq}
+      Pos(PosAv-1, PosCa)
+      tomarPapel
+      BloquearEsquina(12,11)
+      Pos(12,11)
+      depositarPapel
+      Pos(avIni,caIni)
+      LiberarEsquina(12,11)
+      {avisar a depositador}
+      EnviarMensaje(V, v2)
+    EnviarMensaje(F,v2)   {envia falso cuando termina}
+  fin
+  robot depositadorP 
+  variables 
+    av,ca:numero
+    seguir:boolean
+  comenzar
+    derecha
+    RecibirMensaje(seguir, v1)  {recibe ok del recolector}
+    mientras (seguir = V) 
+      av:=PosAv+1
+      ca:=PosCa
+      BloquearEsquina(12,11)
+      Pos(12,11)
+      tomarPapel
+      Pos(av,ca)   {esquina actual}
+      LiberarEsquina(12,11)
+      depositarPapel
+      RecibirMensaje(seguir, v1)
+        
+    EnviarMensaje(ca, f)
+  fin
+  robot fiscal
+  variables 
+    ganador, ca:numero
+  comenzar
+     {no es necesario id, podría recibir numero de calle}
+    RecibirMensaje(ca, *)
+    ganador:= ca
+    RecibirMensaje(ca,*)
+    si (ganador = 12)   {calle 12}
+      Informar ('gano equipo azul', ganador)
+    sino 
+      Informar ('gano equipo verde', ganador)
+  fin
+variables
+  a1: recolectorF
+  a2: depositadorF
+  v1: recolectorP
+  v2: depositadorP
+  f: fiscal
+comenzar
+  AsignarArea(a1, areaA1)
+  AsignarArea(a1, base)
+  AsignarArea(a2, areaA2)
+  AsignarArea(a2, base)
+  AsignarArea(v1, areaV1)
+  AsignarArea(v1, base)
+  AsignarArea(v2, areaV2)
+  AsignarArea(v2, base)
+  AsignarArea(f, areaf)
+  Iniciar(f, 20,11)
+  Iniciar(a1, 11,12)
+  Iniciar(a2, 12,12)
+  Iniciar(v1, 11,10)
+  Iniciar(v2, 12,10)
+fin

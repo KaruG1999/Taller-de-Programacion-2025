@@ -1,5 +1,4 @@
-{SincroniaciÃ³n barrera }
-
+{SincroniaciÃƒÂ³n barrera - etapas heterogéneas (N papeles) }
 programa ej3B
 procesos
   proceso asignaIds
@@ -13,11 +12,11 @@ procesos
     cantP:numero
   comenzar
     cantP:=0
-    mientras(PosCa<100)&(cantP<cant)
+    mientras(PosCa<100)&(cantP<cant)                 {evalua que no llegue al final}
       mientras (HayPapelEnLaEsquina) & (cantP<cant)
         tomarPapel
         cantP:=cantP+1
-      si (cantP<cant)
+      si (PosCa<100)&(cantP<cant)  {solo se mueve si no junto el tot de papeles en esq act}
         mover
   fin
   proceso recorrerAvenida
@@ -26,7 +25,6 @@ procesos
     ok:numero
   comenzar
     RecibirMensaje(id, c)  {recibe su id del coordinador}
-    ok:=0
     mientras (PosCa<100)&(ok=0)  {espera a que terminen los demas}
       Random(N,1,5)
       juntarP(N)
@@ -52,9 +50,9 @@ procesos
           sino
             EnviarMensaje(0,r1)
             EnviarMensaje(0,r2)
-    RecibirMensaje(ok,*) {recibe 1 y se detiene}
-    si (ok=0)
-      RecibirMensaje(ok,*) 
+      RecibirMensaje(ok, *)
+      si (ok=0)
+        RecibirMensaje(ok,*)         {recibe 1 y se detiene} 
     {falta ult esq?}
   fin
 areas

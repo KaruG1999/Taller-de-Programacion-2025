@@ -1,0 +1,142 @@
+{Turno H - tema 1.}
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso inicial (ES c1:numero; ES c2:numero; ES c3:numero)
+  comenzar
+    c1:=0
+    c2:=0
+    c3:=0
+  fin
+  proceso juntarFuente(E cantf:numero)
+  variables 
+    av,ca:numero
+  comenzar
+    av:=PosAv
+    ca:=PosCa
+    BloquearEsquina(50,50)
+    Pos(50,50)       
+    repetir cantf
+      tomarFlor
+    Pos(av,ca)
+    LiberarEsquina(50,50)
+  fin
+  proceso depositaFuente (E cantf:numero)
+  variables 
+    av,ca:numero
+  comenzar
+    av:=PosAv
+    ca:=PosCa
+    repetir cantf
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      depositarFlor
+      Pos(av,ca)
+      LiberarEsquina(50,50)
+  fin
+  proceso  juntarFlores (ES cantf:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:= cantf+1
+  fin
+  proceso cuadrado (E lado:numero; ES cantf:numero)
+  comenzar
+    repetir 4
+      repetir lado
+        juntarFlores (cantf)
+        mover 
+      derecha
+  fin
+  proceso calculaMax (E c1:numero; E c2:numero; E c3:numero; ES idMax:numero)
+  comenzar
+    si (c1 >= c2) & (c1 >= c3)
+      idMax:= 1
+    si (c2 >= c1) & (c2 >= c3)
+      idMax:= 2
+    si (c3 >= c1) & (c3 >= c2)
+      idMax:=3
+  fin
+areas
+  fuente: AreaC (50,50,50,50)
+  area1: AreaP (1,1,8,21)
+  area2: AreaP (10,1,18,21)
+  area3: AreaP (20,1,28,21)
+  areac: AreaP (100,100,100,100)
+robots
+  robot recolector
+  variables 
+    lado, cantf, id:numero
+  comenzar
+    RecibirMensaje(id, c)
+    RecibirMensaje(lado, c)
+    repetir 3
+      cantf:=0
+      cuadrado (lado, cantf)
+      depositaFuente (cantf)
+      EnviarMensaje(id, c)
+      EnviarMensaje(cantf, c)
+      Pos(PosAv, PosCa+lado+1)  {se posiciona en prox inicio cuadrado}
+  fin
+  robot coordinador
+  variables 
+    lado, cantf, id, idMax, aux:numero
+    c1,c2,c3:numero
+  comenzar
+    asignaIds 
+    idMax:= -1
+      
+    aux:=1
+    mientras (aux < 4 )  
+      Random (lado, 1,6)    {pueden tener distintos tamaños}
+      si (aux=1)
+        EnviarMensaje(lado, r1)
+      sino 
+        si (aux=2) 
+          EnviarMensaje(lado, r2)
+        sino
+          EnviarMensaje(lado, r3)
+      aux:=aux+1
+    
+    inicial (c1,c2,c3)
+    repetir 9  
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cantf, r1)
+        c1:= c1+ cantf
+      sino
+        si (id=2)
+          RecibirMensaje(cantf, r2)
+          c2:= c2+ cantf
+        sino 
+          RecibirMensaje(cantf,r3)
+          c3:= c3+ cantf
+      juntarFuente(cantf)
+    calculaMax (c1,c2,c3, idMax)
+    Informar('junto mas flores', idMax)
+  fin
+variables
+  r1: recolector
+  r2: recolector
+  r3: recolector 
+  c: coordinador
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuente)
+  AsignarArea(c, areac)
+  AsignarArea(c, fuente)
+  
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 10,1)
+  Iniciar(r3, 20,1)
+  Iniciar(c, 100,100)
+fin

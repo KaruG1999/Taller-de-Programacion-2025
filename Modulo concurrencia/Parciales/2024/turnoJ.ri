@@ -119,7 +119,7 @@ robots
         escalonP(cantp) 
     depositarF (cantf)
     depositarP (cantp)
-    EnviarMensaje(0, f)
+    EnviarMensaje(0, f)    {envia 4 veces el "id"}
     EnviarMensaje(cantf,f)
     EnviarMensaje(cantp,f)
   fin
@@ -135,7 +135,7 @@ robots
       RecibirMensaje(id,*)  {para ident a quien envio tarea}
       Random(t,1,2)
       si(id=1)
-        EnviarMensaje(t, r1)
+        EnviarMensaje(t,r1)
       sino
         si (id=2)
           EnviarMensaje(t,r2)

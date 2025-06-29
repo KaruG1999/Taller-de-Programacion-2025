@@ -1,0 +1,100 @@
+{30-11-2013.}
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+  fin
+  proceso calculaMax (E j1:numero; E j2:numero; ES idMax:numero)
+  comenzar
+    si (j1 >= j2)
+      idMax:=1
+    sino
+      idMax:=2
+  fin
+  proceso asignaEsq (E av:numero; E ca:numero)
+  comenzar
+    EnviarMensaje(av, r1)
+    EnviarMensaje(ca, r1)
+    EnviarMensaje(av, r2)
+    EnviarMensaje(ca, r2)
+  fin  
+  proceso depositarFlores 
+  comenzar
+    mientras (HayFlorEnLaBolsa)
+      depositarFlor
+  fin
+areas
+  fuente: AreaPC (1,1,20,20)
+  area1: AreaP (21,21,21,21)
+  area2: AreaP (22,22,22,22)
+  areaf: AreaP (23,23,23,23)
+  areaP: AreaPC (25,25,25,25)
+robots
+  robot jugador
+  variables 
+    id, cantf, av,ca, avIni,caIni:numero
+    ganador:numero
+  comenzar
+    RecibirMensaje(id,f)
+    avIni:=PosAv
+    caIni:=PosCa
+    repetir 5
+      cantf:=0
+      RecibirMensaje(av, f)
+      RecibirMensaje(ca, f)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      mientras (HayFlorEnLaEsquina)  
+        tomarFlor
+        cantf:= cantf+1
+      Pos(avIni,caIni)
+      LiberarEsquina(av,ca)
+      EnviarMensaje(id, f)
+      EnviarMensaje(cantf, f)
+    {tiene que recibir si es ganador}
+    RecibirMensaje(ganador, f)
+    si (ganador <> id) 
+      depositarFlores 
+  fin
+  robot fiscal
+  variables 
+    id,av,ca,cantf,j1,j2,idMax:numero
+  comenzar
+    asignaIds
+    idMax:=0
+    j1:=0
+    j2:=0
+    repetir 5
+      Random(av,1,20)
+      Random(ca,1,20)
+      asignaEsq (av,ca)   {envio av y ca a robots}
+      RecibirMensaje(id,*)
+      si (id=1)
+        RecibirMensaje(cantf, r1)
+        j1:=j1 + cantf
+      sino 
+        RecibirMensaje(cantf, r2)
+        j2:=j2 + cantf
+    calculaMax (j1,j2,idMax)
+    Informar('r que junto mas flores ', idMax)
+    EnviarMensaje(idMax, r1)
+    EnviarMensaje(idMax, r2)
+  fin
+variables
+  r1: jugador
+  r2: jugador
+  f: fiscal
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1,fuente)
+  AsignarArea(r1, areaP)
+  AsignarArea(r2, area2)
+  AsignarArea(r2,fuente)
+  AsignarArea(r2, areaP)
+  AsignarArea(f, areaf)
+  Iniciar(r1, 21,21)
+  Iniciar(r2, 22,22)
+  Iniciar(f, 23,23)
+fin

@@ -1,5 +1,4 @@
-{Sincroniación barrera }
-
+{Sincroniación barrera - etapas homogeneas (cada 5 esquinas)}
 programa ej3A
 procesos
   proceso asignaIds
@@ -18,8 +17,8 @@ procesos
     id:numero
     ok:boolean
   comenzar
-    RecibirMensaje(id, c)  {recibe su id del coordinador}
-    repetir 4 {arranca en esqu actual y solo avanza 4 esq}
+    RecibirMensaje(id, c)   {recibe su id del coordinador}
+    repetir 4               {arranca en esqu actual y solo avanza 4 esq}
       juntarPap
       mover
     juntarPap     
@@ -40,7 +39,7 @@ procesos
         RecibirMensaje(ok, r1)
         RecibirMensaje(ok, r2) 
     repetir 19     {19x5 = 95 esquinas + 5 esq anteriores}
-      repetir 5 {avanza 5 esquinas}
+      repetir 5    {avanza 5 esquinas}
         mover
         juntarPap
       si(id=1)
@@ -68,11 +67,11 @@ areas
 robots
   robot robot1
   comenzar
-    recorrerAvenida
+    recorrerAvenida  
   fin
   robot coordinador
   comenzar
-    asignaIds
+    asignaIds         {el coordinador solo les dice quienes son, para que se reconozcan entre si}
   fin
 variables
   r1: robot1

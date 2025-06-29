@@ -1,4 +1,4 @@
-{ al pasar id salen uno despues de otro?}
+{Todos tienen dist intersecciones por eso son 4 tipos distintos de robot}
 programa ej1
 procesos
   proceso juntarP (ES cantP:numero)
@@ -128,7 +128,7 @@ robots
     cantP:=0
     RecibirMensaje(id,f)
     derecha
-    recorrerCa98 (cantP)
+    recorrerCa98 (cantP)     
     EnviarMensaje(id, f)
     EnviarMensaje(cantP, f)
   fin
@@ -153,12 +153,20 @@ robots
     asignaIds
     repetir 4
       RecibirMensaje(id,*)
-      RecibirMensaje(cant, *)
-      si (id=1)| (id=2)
+      si (id=1) 
+        RecibirMensaje(cant,r1)
         totR:= totR + cant
-      sino   
-        si (id=3)|(id=4)
-          totA:= totA + cant
+      sino 
+        si (id=2)
+          RecibirMensaje(cant,r2)
+          totR:= totR + cant
+        sino   
+          si (id=3)
+            RecibirMensaje(cant, a1)
+            totA:= totA + cant
+          sino 
+            RecibirMensaje(cant, a2)
+            totA:= totA + cant
     si (totR > totA)
       Informar('ganador equipo rojo',totR)
     sino

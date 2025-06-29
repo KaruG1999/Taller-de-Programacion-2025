@@ -1,0 +1,130 @@
+{ Tema 1 - 9/06/2025.}
+
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso cuentaEsq (ES cantp:numero)  {cuenta y los deja en la misma esq}
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantp:= cantp+1
+    mientras (HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+  proceso avisaJefe (E id:numero;E cantp:numero;E x:numero; E y:numero)
+  comenzar
+    EnviarMensaje(id, j)
+    EnviarMensaje(cantp, j)
+    EnviarMensaje(x, j)
+    EnviarMensaje(y, j)
+  fin
+  proceso vaciarEsq (E x:numero; E y:numero)
+  variables 
+    avAct:numero
+    seguir:boolean
+  comenzar
+    avAct:=PosAv        {quedan en pos inicial}
+    seguir:= V
+    mientras (seguir)
+      BloquearEsquina(x,y)
+      Pos(x,y)
+      si (HayPapelEnLaEsquina)
+        tomarPapel
+      sino 
+        seguir:=F
+      Pos(avAct,11)
+      LiberarEsquina(x,y)
+  fin
+  proceso actualizaMax(E cantp:numero; ES cantpMax:numero; E x:numero; E y:numero;ES xMax:numero ;ES yMax:numero)
+  comenzar
+    si (cantp > cantpMax)
+      cantpMax:= cantp
+      xMax:= x
+      yMax:= y
+  fin
+  proceso avisaEsquina (E xMax: numero; E yMax:numero)
+  comenzar
+    EnviarMensaje(xMax, r1)
+    EnviarMensaje(yMax, r1)
+    EnviarMensaje(xMax, r2)
+    EnviarMensaje(yMax, r2)
+    EnviarMensaje(xMax, r3)
+    EnviarMensaje(yMax, r3)
+  fin
+areas
+  areaT: AreaPC (1,1,3,10)  {area de trabajo de los 3}
+  area1: AreaP (1,11,1,11)
+  area2: AreaP (2,11,2,11)
+  area3: AreaP (3,11,3,11)
+  areaj: AreaP (4,11,4,11)
+robots
+  robot analizador
+  variables 
+    id,x,y:numero
+    cantp:numero
+  comenzar
+    RecibirMensaje(id, j)
+    Pos(PosAv,1)  {se posicionan al inicio de su tramo}
+    repetir 10
+      cantp:=0
+      cuentaEsq (cantp)
+      x:=PosAv       {almacena esquina actual antes de mover}
+      y:=PosCa
+      mover  {!! importante: mover antes de enviar info para no afectar conc}
+      avisaJefe (id,cantp,x,y)
+    {cuando termina espera esq max} 
+    RecibirMensaje(x, j)
+    RecibirMensaje(y, j) 
+    vaciarEsq (x,y)    
+  fin
+  robot jefe 
+  variables 
+    x,y,xMax,yMax:numero
+    cantp,cantpMax, esqV:numero
+    id:numero
+  comenzar
+    asignaIds 
+    repetir 30   {recibe info de 30 esquinas}
+      RecibirMensaje(id, *)
+      si (id=1)
+        RecibirMensaje(cantp, r1)
+        RecibirMensaje(x, r1)
+        RecibirMensaje(y, r1)
+      sino
+        si (id=2)
+          RecibirMensaje(cantp, r2)
+          RecibirMensaje(x, r2)
+          RecibirMensaje(y, r2)
+        sino 
+          RecibirMensaje(cantp, r3)
+          RecibirMensaje(x, r3)
+          RecibirMensaje(y, r3)
+      actualizaMax (cantp,cantpMax,x,y,xMax,yMax)
+      si (cantp = 0)  {cuenta esq vacias}
+        esqV:= esqV+1
+    Informar ('cant de esquinas vacias', esqV)
+    avisaEsquina (xMax,yMax)
+  fin
+variables
+  r1: analizador
+  r2: analizador
+  r3: analizador
+  j:jefe
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, areaT)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, areaT)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, areaT)
+  AsignarArea(j, areaj)
+  Iniciar(r1, 1,11)
+  Iniciar(r2, 2,11)
+  Iniciar(r3, 3,11)
+  Iniciar(j, 4,11)
+fin

@@ -1,0 +1,142 @@
+{turno G - tema 1 - 15/11/2013}
+
+programa parcial
+procesos
+  proceso asignaIds
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso juntarFuente
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    {es necesario el bloqueo si ya terminaron de trabajar todos?}
+    Pos(99,99)
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+    Pos(avIni,caIni)
+  fin
+  proceso escalon (E alto:numero; E ancho:numero; ES cantE:numero)
+  variables 
+    cantp:numero
+  comenzar
+    cantp:=0
+    repetir alto
+      si (HayPapelEnLaEsquina)
+        juntarP (cantp)
+        cantE:=cantE+1
+      mover
+    derecha
+    depositarP (cantp)
+    repetir ancho
+      si (HayPapelEnLaEsquina)
+        juntarP (cantp)
+        cantE:=cantE+1        
+      mover
+    izq
+    depositarP (cantp)
+  fin
+  proceso izq
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso juntarP (ES cantp:numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantp:=cantp+1
+  fin
+  proceso depositarP (ES cantp:numero)
+  variables 
+    avIni,caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    BloquearEsquina(99,99)
+    Pos(99,99)
+    repetir cantp
+      depositarPapel
+    Pos(avIni,caIni)
+    LiberarEsquina(99,99)
+    cantp:=0
+  fin
+areas
+  fuente: AreaC (99,99,99,99)
+  area1: AreaP (2,1,18,13)
+  area2: AreaP (32,1,48,13)
+  area3: AreaP (62,1,78,13)
+  areaf: AreaP (1,1,1,1)
+robots
+  robot fiscal
+  variables 
+    id, esqJ, cantE :numero
+  comenzar
+    asignaIds  
+    repetir 12   {4 escalones cada uno}
+      RecibirMensaje(id, *)
+      si (id = 1)
+        EnviarMensaje(V, r2)
+        EnviarMensaje(V, r3)
+      sino 
+        si (id=2)
+          EnviarMensaje(V, r1)
+          EnviarMensaje(V, r3)
+        sino
+          EnviarMensaje(V, r1)
+          EnviarMensaje(V, r2)
+    esqJ:=0
+    repetir 3
+      RecibirMensaje(cantE, *)
+      esqJ:= esqJ + cantE
+    Informar('cantidad de esquinas vaciadas ', esqJ)
+    juntarFuente
+  fin
+  robot papelero
+  variables 
+    id,cantE:numero
+    alto, ancho:numero
+    ok:boolean
+  comenzar
+    cantE:=0
+    RecibirMensaje(id, f)
+    Random(alto,1,3)
+    Random(ancho,2,4)
+    repetir 4
+      escalon (alto, ancho, cantE)
+      EnviarMensaje(id, f) {termina escalon y queda esperando sig ok}
+      si (id=1)     {queda a la espera de sus compañeros para seguir}
+        RecibirMensaje(ok, f)
+        RecibirMensaje(ok, f)
+      sino 
+        si (id=2)
+          RecibirMensaje(ok, f)  
+          RecibirMensaje(ok, f)
+        sino 
+          RecibirMensaje(ok, f)
+          RecibirMensaje(ok, f)
+    EnviarMensaje(cantE, f)
+  fin
+variables
+  r1: papelero
+  r2: papelero
+  r3: papelero
+  f: fiscal
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuente)
+  AsignarArea(f, areaf)
+  AsignarArea(f, fuente)
+  Iniciar(f, 1,1)
+  Iniciar(r1,2,1)
+  Iniciar(r2,32,1)
+  Iniciar(r3,62,1)
+fin

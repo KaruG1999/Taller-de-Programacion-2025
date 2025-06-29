@@ -1,0 +1,140 @@
+{ tema 2 - 9/06/2025 - Metodo barrera}
+
+programa parcial
+procesos
+  proceso asignaIds 
+  comenzar
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,r3)
+  fin
+  proceso recorreLado (E lado: numero; ES cantf:numero)
+  comenzar
+    repetir lado
+      juntarF (cantf)
+      mover
+    derecha
+  fin
+  proceso juntarF (ES cantf:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantf:= cantf+1
+  fin
+  proceso depositoFlores (E cantf:numero)
+  variables 
+    avAct,caAct:numero
+  comenzar
+    avAct:= PosAv
+    caAct:= PosCa
+    repetir cantf
+      BloquearEsquina (31,2)
+      Pos(31,2)
+      depositarFlor
+      Pos(avAct, caAct)
+      LiberarEsquina(31,2)
+  fin
+  proceso actualizaMax (E id:numero;ES ganador:numero;E cantf:numero;ES cantfMax:numero)
+  comenzar
+    si (cantf > cantfMax)
+      cantfMax:= cantf
+      ganador:= id
+  fin
+  proceso avisaGanador (E ganador:numero)
+  comenzar
+    EnviarMensaje(ganador,r1)
+    EnviarMensaje(ganador,r2)
+    EnviarMensaje(ganador,r3)
+  fin
+areas
+  area1: AreaP (1,1,10,10)
+  area2: AreaP (11,1,20,10)
+  area3: AreaP (21,1,30,10)
+  areaj: AreaP (31,1,31,1)
+  fuente: AreaPC (31,2,31,2)  {todos menos jefe}
+robots
+  robot perimetral
+  variables
+    cantf,lado,id, ganador:numero
+    ok:boolean
+  comenzar
+    RecibirMensaje(id, j)
+    RecibirMensaje(lado, j)
+    repetir 4
+      cantf:=0  
+      recorreLado (lado, cantf)
+      EnviarMensaje(id, j)    {avisa quien es y cantf juntadas}
+      EnviarMensaje(cantf, j)
+      RecibirMensaje(ganador, j)  {recibe ganador}
+      si (id <> ganador)
+        depositoFlores (cantf)  {si no gané deposito en fuente}
+      si (id=1)                 
+        EnviarMensaje(V,r2)
+        EnviarMensaje(V,r3)
+        RecibirMensaje(ok,r2)
+        RecibirMensaje(ok,r3)
+      sino
+        si (id=2)
+          EnviarMensaje(V,r1)
+          EnviarMensaje(V,r3)
+          RecibirMensaje(ok,r1)
+          RecibirMensaje(ok,r3)
+        sino 
+          EnviarMensaje(V,r1)
+          EnviarMensaje(V,r2)
+          RecibirMensaje(ok,r1)
+          RecibirMensaje(ok,r2)
+  fin
+  robot jefe
+  variables  
+    lado,aux:numero
+    id,ganador, cantf, cantfMax:numero
+  comenzar
+    {envio ids y lado}
+    asignaIds 
+    aux:=1
+    repetir 3
+      Random(lado,1,9) {cada robot recibe dist lados}
+      si (aux=1)
+        EnviarMensaje(lado,r1)
+      sino 
+        si (aux=2)
+          EnviarMensaje(lado,r2)
+        sino 
+          EnviarMensaje(lado,r3)
+      aux:= aux+1
+    {4 etapas - cuadrado}
+    repetir 4
+      cantfMax:=0
+      ganador:=0
+      repetir 3  {por cada barrera son 3 avisos}
+        RecibirMensaje(id, *)
+        si (id = 1)
+          RecibirMensaje(cantf, r1)
+        sino 
+          si (id=2)
+            RecibirMensaje(cantf,r2)
+          sino
+            RecibirMensaje(cantf,r3)
+        actualizaMax (id, ganador, cantf, cantfMax)
+      Informar ('r con max flores', ganador)
+      avisaGanador(ganador)
+  fin
+variables
+  r1: perimetral
+  r2: perimetral
+  r3: perimetral
+  j: jefe
+comenzar
+  AsignarArea(r1, area1)
+  AsignarArea(r1, fuente)
+  AsignarArea(r2, area2)
+  AsignarArea(r2, fuente)
+  AsignarArea(r3, area3)
+  AsignarArea(r3, fuente)
+  AsignarArea(j, areaj)
+  Iniciar(r1, 1,1)
+  Iniciar(r2, 11,1)
+  Iniciar(r3, 21,1)
+  Iniciar(j, 31,1)
+fin

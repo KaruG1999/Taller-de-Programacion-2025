@@ -1,0 +1,142 @@
+{.}
+programa parcial
+procesos
+  proceso asignaIds 
+  comenzar
+    EnviarMensaje(1,p1)
+    EnviarMensaje(2,p2)
+    EnviarMensaje(3,f1)
+  fin
+  proceso accede8 (E av:numero; ES cantEsqV:numero)
+  comenzar
+    BloquearEsquina(av,8)
+    mover 
+    procesaEsqVF (cantEsqV)
+    mover 
+    LiberarEsquina(av,8)
+  fin
+  proceso accede15 (E av:numero; ES cantEsqV:numero)
+  comenzar
+    BloquearEsquina(av,15)
+    mover 
+    procesaEsqVF (cantEsqV)
+    mover 
+    LiberarEsquina(av,15)
+  fin
+  proceso asignaEsq
+  variables 
+    av:numero
+  comenzar
+    Random(av,2,35)
+    EnviarMensaje(av, p1)
+    EnviarMensaje(av, p2)
+    EnviarMensaje(av, f1)
+  fin
+  proceso procesaEsqP (ES cantEsqV:numero)
+  comenzar
+    si ~(HayPapelEnLaEsquina)
+      depositarPapel
+      cantEsqV:= cantEsqV + 1
+  fin
+  proceso procesaEsqVF (ES cantEsqV:numero)
+  comenzar
+    si ~(HayFlorEnLaEsquina)
+      depositarFlor
+      cantEsqV:=  cantEsqV + 1
+  fin
+areas
+  ciudad: AreaPC (2,1,100,100)
+  areaf1: AreaP (1,2,1,2)
+  areap1: AreaP (1,8,1,8)
+  areap2: AreaP (1,15,1,15)
+  areaf: AreaP (1,1,1,1)
+robots
+  robot papelero
+  variables 
+    id,cantEsqV,ganador,av:numero
+    avSig:numero
+  comenzar
+    cantEsqV:=0
+    RecibirMensaje(id,f)
+    RecibirMensaje(av, f)
+    derecha
+    procesaEsqP (cantEsqV)
+    mientras (PosAv<100)
+      avSig:= PosAv+1
+      si (avSig = av)
+        BloquearEsquina(av,PosCa)
+        mover 
+        procesaEsqP (cantEsqV)
+        mover 
+        LiberarEsquina(av,PosCa)
+      sino 
+        mover 
+      procesaEsqP (cantEsqV)  {procesa esq en ambos casos}
+    EnviarMensaje(id, f) {avisa que llegó al final}
+    RecibirMensaje(ganador, f)   {recibe id de ganador}
+    si (ganador = id)
+      Pos(1,PosCa)
+      Informar ('cantidad de pap depositados ', cantEsqV)   
+  fin
+  robot florero
+  variables 
+    id, cantEsqV, ganador, av:numero
+  comenzar
+    cantEsqV:=0
+    RecibirMensaje(id,f)
+    RecibirMensaje(av, f)
+    Pos(av, 1) {se posiciona en avenida elegida por fiscal}
+    procesaEsqVF (cantEsqV)
+    mientras (PosCa < 7)   {avanza hasta calle 7}
+      mover 
+      procesaEsqVF (cantEsqV)
+    accede8 (av, cantEsqV)
+    procesaEsqVF (cantEsqV)
+    mientras (PosCa < 14)
+      mover 
+      procesaEsqVF (cantEsqV)
+    accede15 (av, cantEsqV)
+    mientras (PosCa < 100)
+      procesaEsqVF (cantEsqV)
+      mover 
+    procesaEsqVF (cantEsqV)
+    EnviarMensaje(id, f)
+    RecibirMensaje(ganador, f)
+    si (ganador = id)
+      Pos(1,2)   {esquina origen}
+      Informar ('cantidad de flores depositadas ', cantEsqV)
+  fin
+  robot fiscal
+  variables 
+    id,ganador:numero
+  comenzar
+    ganador:=0
+    asignaIds 
+    asignaEsq
+    RecibirMensaje(id, *)
+    ganador:=id
+    repetir 2
+      RecibirMensaje(id, *)
+    {envio id ganador a todos}  
+    EnviarMensaje(ganador, p1)
+    EnviarMensaje(ganador, p2)
+    EnviarMensaje(ganador, f1)
+  fin
+variables
+  p1: papelero
+  p2: papelero
+  f1: florero
+  f: fiscal 
+comenzar
+  AsignarArea(p1, areap1)
+  AsignarArea(p1, ciudad)
+  AsignarArea(p2, areap2)
+  AsignarArea(p2, ciudad)
+  AsignarArea(f1, areaf1)
+  AsignarArea(f1, ciudad)
+  AsignarArea(f, areaf)
+  Iniciar(f, 1,1)
+  Iniciar(p1,1,8)
+  Iniciar(p2,1,15)
+  Iniciar(f1,1,2)
+fin

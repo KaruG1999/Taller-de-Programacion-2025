@@ -4,9 +4,8 @@ Productor: recorren av y cada 5 papeles que junta, los deposita en (50,50)
 Consumidor: 
 - intenta tomar entre 2 y 5 papeles de esq (50,50), si hay menos lo deja 
 - deposita en esq de origen
-- para cuando intentÃ³ tomarpap y no lo logra 8 veces seguidas
+- para cuando intentÃƒÂ³ tomarpap y no lo logra 8 veces seguidas
 }
-
 programa ej2
 procesos
   proceso depositarP (E cantP:numero)
@@ -33,22 +32,21 @@ procesos
         cantP:=0  {reinicio contador papeles}
   fin
 areas
-  fuente: AreaC (50,50,50,50)
-  areap1: AreaP (5,1,5,100)
+  fuente: AreaC (50,50,50,50)          {"fuente de papeles"}
+  areap1: AreaP (5,1,5,100)            {areas de c/u}
   areap2: AreaP (10,1,10,100)
   areac1: AreaP (11,1,11,1)
   areac2: AreaP (12,1,12,1)
 robots
-  {recorre av y cada 5 pap que junta deposita en 50,50 y vuelve}
-  robot productor 
+  robot productor        {recorre av y cada 5 pap que junta deposita en 50,50 y vuelve}
   variables
     cantP:numero
   comenzar
     cantP:=0
-    repetir 99   {repetir 99 recomendado}
-      juntaYdeposita (cantP)   {proceso esquina}     
+    repetir 99                 {repetir 99 recomendado}
+      juntaYdeposita (cantP)    {proceso esquina}     
       mover
-    juntaYdeposita(cantP) {ultima esquina}
+    juntaYdeposita(cantP)       {ultima esquina}
   fin
   robot consumidor
   variables 
@@ -67,13 +65,13 @@ robots
       mientras(HayPapelEnLaEsquina) & (cantP<>cant) {puede no haber cantidad pedida}
         tomarPapel
         cantP:=cantP+1
-      si (cantP < cant)
-        repetir cantP     {dejar los papeles, no alcanzan}
+      si (cantP < cant)             {dejar los papeles, no alcanzan}
+        repetir cantP     
           depositarPapel
       Pos(avIni,caIni)
       LiberarEsquina(50,50)
-      si (cantP = cant)   {al salir evalua de nuevo}
-        depositarP(cant) {depositar cantP papeles en la esq orig}
+      si (cantP = cant)             {al salir evalua de nuevo}
+        depositarP(cant)             {depositar cantP papeles en la esq orig}
         veces:= 0
       sino 
         veces:= veces + 1 
